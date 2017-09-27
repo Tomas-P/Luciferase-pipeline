@@ -28,7 +28,7 @@ def finding_macro_dir(ImageJ_Folder):
             break
     return matches[0] # there should only be one match
 
-def Preproccess(macro_dir, output_dir):
+def Preproccess(macro_dir, output_dir, folder_path):
     # doubled braces are where I don't want to substitute in an object
     macro_text = '''
 dir = getDirectory("Choose the folder with your raw images");
@@ -72,7 +72,8 @@ run("Image Sequence... ", "format=TIFF save={0}\\\\exStack0000.tif");
         pass
 
     # run the macro from the shell
-    run('cd C:\\Users\\Tomas\\Desktop\\Fiji.app && ImageJ-win64.exe -macro preproccess_macro.ijm', shell=True)
+    # this directory needs to be changed
+    run('cd {0} && ImageJ-win64.exe -macro preproccess_macro.ijm'.format(folder_path.replace('/','\\')), shell=True)
 
 if __name__ == '__main__':
     # data for preproccessing the images
@@ -82,4 +83,4 @@ if __name__ == '__main__':
     macro_dir = finding_macro_dir(ImageJ)
 
     # actually preprocessing the images
-    Preproccess(macro_dir, Data.foldername)
+    Preproccess(macro_dir, Data.foldername, ImageJ.foldername)

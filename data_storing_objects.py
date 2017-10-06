@@ -1,9 +1,27 @@
 from skimage.io import imread
-import tkinter.filedialog as filedialog
+from tkinter import Tk, BOTTOM, Button, filedialog
 import glob
 import json
 from subprocess import run
-        
+
+# functions for the config class GUI
+def get_rois():
+    global global_rois_directory
+    global_rois_directory = filedialog.askdirectory()
+
+def get_data_images():
+    global global_data_directory
+    global_data_directory = filedialog.askdirectory()
+
+def get_ImageJ():
+    global global_imagej_directory
+    global_imagej_directory = filedialog.askdirectory()
+
+def get_raw_images():
+    global global_raws_directory
+    global_raws_directory = filedialog.askdirectory()
+
+    
 class PixelHolder(dict):
     # stores data associated with a pixel
     def get_data(self, xpos, ypos, segment_array, data_array):
@@ -12,15 +30,26 @@ class PixelHolder(dict):
         # the y position of the pixel
         self['y'] = ypos
         # wether the pixel represents data
-        if segment_array[xpos][ypos] == 255: # 255 represents white given previously,
-            # the PIL was used to convert ROI images to a binary representation
+
+        # set the is data flag to true if the position is true or 255 (deals with multiple representations)
+        if segment_array[xpos][ypos] == 255 or segment_array[xpos][ypos] == True:
+            # I think the representation that gets loaded in is
+            # an array of True or False
+            # because of the use of the PIL.Image().convert() method
+            # in a different script to make the ROI segmentations black and white
             self['is data'] = True
-        elif segment_array[xpos][ypos] == 0: # zero represents black, everything makes sense now for the ROI images, 255 is black in the data images
-            # because I used the Python Imaging Library ( Pillow sinse this is python 3)
+        # set the is data flag to true if the position is false or 0 (also deals with multiple representations)
+        elif segment_array[xpos][ypos] == False or segment_array[xpos][ypos] == 0:
+            # 
             self['is data'] = False
+        else:
+            # a section that was used for debugging
+            # it is here to tell the programmer that an invalid value was found in the segmentation array, and what that value was
+            raise ValueError("Something is wrong. The value of the current position is {0}".format(segment_array[xpos][ypos]))
         # what data the pixel holds
         self['data'] = data_array[xpos][ypos]
         self['black'] = data_array[xpos][ypos] == 255
+
 class Folder():
     # stores the names of files in an image
     def __init__(self, foldername):
@@ -56,20 +85,30 @@ class Config:
             conf.close() # has to be done if there is no with statement
             return True
 
-    def do_setup(self, ImageJ_location=None, data_images_location=None, ROI_images_location=None,config_filename='config.json'):
+    def do_setup(self, config_filename='config.json'):
         # dictionary object to hold key information
         config_data = {}
         # interactive prompts for easy setup
-        if ImageJ_location == None:
-            ImageJ_location = filedialog.askdirectory()
-        if data_images_location == None:
-            data_images_location = filedialog.askdirectory()
-        if ROI_images_location == None:
-            ROI_images_location = filedialog.askdirectory()
+        # using the tkinter library
+        # the reason I'm using(some would say abusing) the global namespace
+        # is to get information OUT from the tkinter window in a way that might
+        # work. It is crude, I do admit that.
+        #creating the window and forming all of the buttons on it
+        root = Tk()
+        Button(root, text="Click here when you are happy with your selections", command=root.destroy).pack(side=BOTTOM)
+        Button(root, text="Choose the folder with your data images", command=get_data_images).pack()
+        Button(root, text="Choose the folder with your ImageJ installation", command=get_ImageJ).pack()
+        Button(root, text="Choose the folder with your ROI selection images", command=get_rois).pack()
+        Button(root, text="Choose the folder with your raw data images", command=get_raw_images).pack()
+        # essentially, the program will not continue until the mainloop is finished
+        root.mainloop()
+        
         # giving the object the information needed for the configuration
-        config_data['ImageJ folder'] = ImageJ_location
-        config_data['Data images'] = data_images_location
-        config_data['ROI images'] = ROI_images_location
+        config_data['ImageJ folder'] = global_imagej_directory
+        config_data['Data images'] = global_data_directory
+        config_data['ROI images'] = global_rois_directory
+        config_data['raw folder'] = global_raws_directory
+        
         # actually writing the information to a file
         with open(config_filename, 'w') as conf:
             json.dump(config_data, conf)
@@ -95,13 +134,11 @@ class Config:
             pass # function should exit here, as there is nothing to do
             # pass is only here for syntax reasons
         else: # the file does exist
-            # open a .bat file to edit
-            with open('deletion.bat', 'w') as batfile:
-                # give it the instructions to delete the config file
-                batfile.write('DEL {0}'.format(config_filename))
-            # run the .bat file
-            run('deletion.bat')
-            # the name of the config file will always be the same, so we can end it here
+            # deletes the file
+            # using shell=True may create security issues
+            # but this is an image analysis program
+            run('DEL {0}'.format(config_filename), shell=True) 
+
 class ImageDataPoints:
     # a class that stores data from an image and its ROI image
     
@@ -180,5 +217,6 @@ if __name__ == '__main__':
         # if this is reached, everything is in order
         Image = ImageDataPoints(data, roi) # create the object that associates the data and Region Of Interest (ROI) information
         i += 1 # increment the position in the list by one. Important to getting the correct ROI image to be used
-        print(Image.average_data(), Image.average_data_ignore_black()) # finally, display the average of all identified data pixels and the average
-        # of all identified non-black data pixels
+        avg = Image.average_data()
+        blk = Image.average_data_ignore_black()
+        print(avg, blk)

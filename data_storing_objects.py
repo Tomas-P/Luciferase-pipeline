@@ -162,7 +162,10 @@ class ImageDataPoints:
         total = 0
         for pixel in self.generate_each_pixel_in_order():
             if pixel['is data'] == True:
-                total += pixel['data']
+                # call float to prevent overflow errors
+                # which are caused because numpy wants to be
+                # fast
+                total += float(pixel['data'])
         return total / sum((1 for i in self.generate_each_pixel_in_order() if i['is data'] == True))
     
     def generate_each_pixel_in_order(self):

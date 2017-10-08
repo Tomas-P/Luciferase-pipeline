@@ -4,22 +4,6 @@ import tkinter.filedialog as filedialog
 import glob
 import re
 
-def get_raw_image_names(config=None, filepath=None): # I'm actually surprised I didn't need this function for this script
-    '''(Config, str) -> list of str
-    finds filenames of unprocessed images to use from config if available,
-    otherwise from filepath
-    '''
-    if config != None: # use config if available
-        folder = config.config_data['raw folder']
-
-    elif filepath == None: # ask the user if filepath and config are unavailable
-        folder = filedialog.askdirectory()
-
-    else: # use the filepath parameter if it is available and the config is not
-        folder = filepath
-    # return a list of filenames in the relevant directory, proprerly formatted
-    return [name.replace('\\', '/') for name in glob.glob(folder + '/*')]
-
 def finding_macro_dir(ImageJ_Folder):
     names = ImageJ_Folder.files
     for name in names:

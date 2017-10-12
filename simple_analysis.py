@@ -1,8 +1,6 @@
 import data_storing_objects as dso
-import json
+from tkinter import filedialog
 
-# just a simple question later
-from tkinter import Tk, ttk, StringVar
 # median functions
 
 def all_image_median(image):
@@ -127,27 +125,11 @@ def std_deviation(image, data):
     elif not data:
         return all_deviation(image)
 
-# method for user input
-def get_out():
-    # gets the user to set the file the output goes to
-    root = Tk()
-    lab=ttk.Label(root,text="Enter a name for your output without an extension")
-    lab.grid(column=0)
-    filename = StringVar()
-    entry = ttk.Entry(root, textvariable=filename)
-    entry.grid(column=1, row=1)
-    leave = ttk.Button(root,text="Done", command=root.destroy)
-    leave.grid(column=1, row=2)
-    root.mainloop()
-
-    # aquire the name it has been set to
-    name = filename.get()
-    # send said name wherever it needs to go
-    return name
-
 if __name__ == '__main__':
-    # getting the user input
-    outfile = get_out()
+
+    # get the user to input a filename to save as
+    file_name = filedialog.SaveAs()
+    filename = file_name.show()
     
     # actual data processing
     conf = dso.Config()
@@ -161,15 +143,61 @@ if __name__ == '__main__':
         im = dso.ImageDataPoints(data, roi)
         # the reason float() has to be called
         # is because numpy floats are not json-writable
-        outputs = {'image name' : str(data.name),"median" : {'whole' : float(image_median(im, False)), 'data' : float(image_median(im, True))},
+        outputs = {"median" : {'whole' : float(image_median(im, False)), 'data' : float(image_median(im, True))},
                    "average" : {'whole': float(image_average(im, False)), 'data' : float(image_average(im, True))},
                    "mode": {'whole': float(mode(im, False)), 'data': float(mode(im, True))},
                    "standard deviation" : {'whole' : float(std_deviation(im, False)),
                                            'data' : float(std_deviation(im, True))}
                    }
-        print(outputs)
-        datapoints.append(outputs)
+        out = (str(data.name), outputs)
+        datapoints.append(out)
 
-    # actually writing the data to the user-requested file
-    with open('{0}.json'.format(outfile), 'w') as file_out:
-        json.dump(datapoints, file_out)
+    # sort the information by name
+    datapoints.sort()
+    
+    # write the information to the filename previously selected by the user
+    with open(filename, 'w') as out:
+
+        # go through each image, and write its information to
+        # the filename
+        for name, data in datapoints:
+            out.write('''{0}
+Medians
+
+Whole
+{0}
+
+Data
+{1}
+
+Averages
+
+Whole
+{2}
+
+Data
+{3}
+
+Modes
+
+Whole
+{4}
+
+Data
+{5}
+
+Standard Deviations
+
+Whole
+{6}
+
+Data
+{7}
+
+
+
+'''.format(name, data['median']['whole'], data['median']['data'],
+              data['average']['whole'], data['average']['data'],
+              data['mode']['whole'], data['mode']['data'],
+              data['standard deviation']['whole'],
+              data['standard deviation']['data']))

@@ -165,34 +165,34 @@ if __name__ == '__main__':
 Medians
 
 Whole
-{0}
+{1}
 
 Data
-{1}
+{2}
 
 Averages
 
 Whole
-{2}
+{3}
 
 Data
-{3}
+{4}
 
 Modes
 
 Whole
-{4}
+{5}
 
 Data
-{5}
+{6}
 
 Standard Deviations
 
 Whole
-{6}
+{7}
 
 Data
-{7}
+{8}
 
 
 

@@ -31,15 +31,15 @@ class PixelHolder(dict):
         self['y'] = ypos
         # wether the pixel represents data
 
-        # set the is data flag to true if the position is true or 255 (deals with multiple representations)
-        if segment_array[xpos][ypos] == 255 or segment_array[xpos][ypos] == True:
+        # set the is data flag to true if the position is true
+        if segment_array[xpos][ypos] == True:
             # I think the representation that gets loaded in is
             # an array of True or False
             # because of the use of the PIL.Image().convert() method
             # in a different script to make the ROI segmentations black and white
             self['is data'] = True
         # set the is data flag to true if the position is false or 0 (also deals with multiple representations)
-        elif segment_array[xpos][ypos] == False or segment_array[xpos][ypos] == 0:
+        elif segment_array[xpos][ypos] == False:
             # 
             self['is data'] = False
         else:

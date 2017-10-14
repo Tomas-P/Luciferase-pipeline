@@ -125,35 +125,49 @@ def std_deviation(image, data):
     elif not data:
         return all_deviation(image)
 
+# a function that crudely extracts the numeric characters from a string
+# and concatenates them before returning an integer
+# this is to make sorting work better.
+
+def extract_int(str_num):
+    # finds all of the numeric characters and concatenates them, then returns
+    # the integer this forms
+    outstring = ''
+    for char in str_num:
+        if char.isnumeric():
+            outstring += char
+
+    return int(outstring)
+
 if __name__ == '__main__':
 
     # get the user to input a filename to save as
     file_name = filedialog.SaveAs()
     filename = file_name.show()
     
-    # actual data processing
+    # finding important information for proccessing data
     conf = dso.Config()
     datas = dso.Folder(conf.config_data['Data images'])
     rois = dso.Folder(conf.config_data['ROI images'])
     image_datas = zip(datas.read_in_next_image(), rois.read_in_next_image())
 
     datapoints = []
-    
+
+    # the actual data processing
     for data, roi in image_datas:
         im = dso.ImageDataPoints(data, roi)
-        # the reason float() has to be called
-        # is because numpy floats are not json-writable
-        outputs = {"median" : {'whole' : float(image_median(im, False)), 'data' : float(image_median(im, True))},
-                   "average" : {'whole': float(image_average(im, False)), 'data' : float(image_average(im, True))},
-                   "mode": {'whole': float(mode(im, False)), 'data': float(mode(im, True))},
-                   "standard deviation" : {'whole' : float(std_deviation(im, False)),
-                                           'data' : float(std_deviation(im, True))}
-                   }
-        out = (str(data.name), outputs)
-        datapoints.append(out)
 
-    # sort the information by name
-    datapoints.sort()
+        outputs = {"median" : {'whole' : image_median(im, False), 'data' : image_median(im, True)},
+                   "average" : {'whole': image_average(im, False), 'data' : image_average(im, True)},
+                   "mode": {'whole': mode(im, False), 'data': mode(im, True)},
+                   "standard deviation" : {'whole' : std_deviation(im, False),
+                                           'data' : std_deviation(im, True)}
+                   }
+
+        datapoints.append([data.name, outputs])
+
+    # sort the information by the number(s) in the filename
+    datapoints.sort(key=lambda x: extract_int(x[0]))
     
     # write the information to the filename previously selected by the user
     with open(filename, 'w') as out:

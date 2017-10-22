@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 import time
-import multiprocessing as multi
+from data_storing_objects import Config
 
 
 def filtering(prep, contrast):
@@ -72,57 +72,58 @@ def analysis():
     from simple_analysis import analyze
     analyze()
 
-# make sure the folders are there when they are needed
-from data_storing_objects import Config
-conf = Config()
-# remove the object from the namespace because it will never be needed again
-del conf
 
-window1 = tk.Tk()
+def mainUI():
+    # ensure all relevant folders are found and then destroy the unused object reference
+    conf = Config()
+    del conf
 
-explain = ttk.Label(window1,
-                      text="Click the buttons to do various tasks")
-explain.pack(fill=tk.X,side=tk.TOP)
+    window1 = tk.Tk()
 
-fil = tk.IntVar()
+    explain = ttk.Label(window1,
+                          text="Click the buttons to do various tasks")
+    explain.pack(fill=tk.X,side=tk.TOP)
 
-filter1 = ttk.Checkbutton(window1,
-                          text="filter out noise",
-                          variable=fil)
-filter1.pack(fill=tk.X)
+    fil = tk.IntVar()
+    filter1 = ttk.Checkbutton(window1,
+                              text="filter out noise",
+                              variable=fil)
+    filter1.pack(fill=tk.X)
 
-roi = tk.IntVar()
+    roi = tk.IntVar()
+    rois = ttk.Checkbutton(window1,
+                           text="find Regions of Interest",
+                           variable=roi)
+    rois.pack(fill=tk.X)
 
-rois = ttk.Checkbutton(window1,
-                       text="find Regions of Interest",
-                       variable=roi)
-rois.pack(fill=tk.X)
+    anly = tk.IntVar()
+    analy = ttk.Checkbutton(window1,
+                            text="analyze images",
+                            variable=anly)
+    analy.pack(fill=tk.X)
 
-anly = tk.IntVar()
+    action = ttk.Button(window1,
+                        text="Begin",
+                        command=window1.destroy)
+    action.pack(side=tk.BOTTOM)
 
-analy = ttk.Checkbutton(window1,
-                        text="analyze images",
-                        variable=anly)
-analy.pack(fill=tk.X)
+    window1.mainloop()
 
-action = ttk.Button(window1,
-                    text="Begin",
-                    command=window1.destroy)
-action.pack(side=tk.BOTTOM)
 
-window1.mainloop()
+    #check if fil is one
+    if fil.get():
+        # if so, filter out the noise
+        data_gather()
 
-#check if fil is one
-if fil.get():
-    # if so, filter out the noise
-    data_gather()
+    #check if roi is one
+    if roi.get():
+        # if so, find the regions of interest
+        find_rois()
 
-#check if roi is one
-if roi.get():
-    # if so, find the regions of interest
-    find_rois()
+    #check if anly is one
+    if anly.get():
+        # if so, analyze the images
+        analysis()
 
-#check if anly is one
-if anly.get():
-    # if so, analyze the images
-    analysis()
+if __name__ == '__main__':
+    mainUI()

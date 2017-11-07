@@ -2,7 +2,7 @@ from skimage.io import imread
 import glob
 import tkinter
 from tkinter import ttk, filedialog
-
+import json
 
 def update(tag, collection, function):
     '''update collection at tag with the output of function()'''

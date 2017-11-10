@@ -1,12 +1,28 @@
+#used modules
 from skimage.io import imread
 import glob
 import tkinter
 from tkinter import ttk, filedialog
 import json
 
+#constants
+IMAGEJ = 'imagej'
+RAW = 'raw'
+ROI = 'roi'
+DATA = 'data'
+
 def update(tag, collection, function):
     '''update collection at tag with the output of function()'''
     collection[tag] = function()
+
+def to_int(text:str)->int:
+    '''concatenates all numberic characters and
+    converts them to an int and returns that int'''
+    number = ''
+    for char in text:
+        if char.isnumeric():
+            number += char
+    return int(number)
 
 class Pixel(dict):
     "Store data associated with a pixel"
@@ -14,12 +30,13 @@ class Pixel(dict):
         "Aquire all relevant information and use it to update the Pixel object."
         self['x'] = xpos #position
         self['y'] = ypos
-        #checking for correct type
-        if not isinstance(segment_array[xpos][ypos], bool):
-            raise TypeError(f'''An invalid value of {segment_array[xpos][ypos]} exists at the current
-position in the segmentation array at ({xpos},{ypos}).''')
+        # code was helpful for finding one error, commented out because
+        # it was creating a nonsensical error about an invalid value of True
+        #if not isinstance(segment_array[xpos][ypos], bool):
+            #raise TypeError(f'''An invalid value of {segment_array[xpos][ypos]} exists at the current
+            #position in the segmentation array at ({xpos},{ypos}).''')
         self['data'] = segment_array[xpos][ypos] #update with whether data
-        self['value'] = data_array[xpos][ypos] #update with value
+        self['value'] = float(data_array[xpos][ypos]) #update with value
 
 class Folder:
     '''stores the names of files in a folder and the folder path.
@@ -30,13 +47,14 @@ folders with subfolders.'''
         self.foldername = foldername
         self.files = [file.replace('\\','/') for
                       file in glob.glob(foldername + '/*')]
-        #sort the files to ensure their orderly occurence
-        self.files.sort()
         if all((file[-4]=='.' for file in self.files)):
             self.only_files = True
         else:
             self.only_files = False
-
+        if self.only_files:
+            self.files.sort(key=to_int)
+        else:
+            self.files.sort()
     def next_image(self):
         '''takes the imagename in the relevant position
 and reads the image into memory as a NamedImage object.
@@ -87,19 +105,24 @@ class Config(dict):
     def ui(self):
         "Implements a crude user interface to set config values."
         root = tkinter.Tk()
+        # I had to make each button explicit so they would work correctly
         ttk.Button(root,
                    text="Click here when you are satified with your selections.",
-                   command=root.destroy).pack()
-        for item in ['data images','ROI images','raw images','ImageJ installation']:
-            ttk.Button(root,
-                       text=f"Choose the folder with your {item}",
-                       command=lambda:update(item,
-                                             self,
-                                             filedialog.askdirectory
-                                             )
-                       ).pack()
+                   command=root.destroy).pack(side=tkinter.TOP, fill=tkinter.X)
+        ttk.Button(root,
+                   text="Choose the folder with your raw images.",
+                   command=lambda:update('raw',self,filedialog.askdirectory)).pack(fill=tkinter.X)
+        ttk.Button(root,
+                   text = "Choose the folder with your data images.",
+                   command=lambda:update('data',self,filedialog.askdirectory)).pack(fill=tkinter.X)
+        ttk.Button(root,
+                   text="Choose the folder with your roi images.",
+                   command=lambda:update('roi',self,filedialog.askdirectory)).pack(fill=tkinter.X)
+        ttk.Button(root,
+                   text="Choose the folder with your ImageJ installation.",
+                   command=lambda:update('imagej',self,filedialog.askdirectory)).pack(fill=tkinter.X)
         root.mainloop()
-
+        
     def load(self, file=CONFIGFILE):
         "load information from the relevant file."
         with open(file) as conf:
@@ -171,34 +194,34 @@ I hope."""
         datapoints = 0
         for pixel in self.next_pixel():
             if pixel['data']:
-                total += float(pixel['value'])
+                total += pixel['value']
                 datapoints += 1
         return total / datapoints
 
     def mode(self):
-        "Find the mode of the entire image."
-        counts = {}
-        for pixel in self.next_pixel():
-            if pixel['value'] not in counts:
-                counts[pixel['value']] = 1
-            else:
-                counts[pixel['value']] += 1
-
-        md = max(counts.values())
-        for key,value in counts:
-            if value==md:
-                return key
-
+        return NotImplemented
     def data_mode(self):
-        "Find the mode of the data in the image."
-        counts = {}
-        for pixel in self.next_pixel():
-            if pixel['data'] and not pixel['value'] in counts.keys():
-                counts[pixel['value']] = 1
-            elif pixel['data'] and pixel['value'] in counts.keys():
-                counts[pixel['value']] += 1
+        return NotImplemented
 
-        md = max(counts.values())
-        for key, value in counts:
-            if value==md:
-                return key
+if __name__ == '__main__':
+    # more to check the module works than anything else
+    config = Config()
+    imagej = Folder(config[IMAGEJ])
+    raws = Folder(config[RAW])
+    data = Folder(config[DATA])
+    rois = Folder(config[ROI])
+    #assert len(data.files)==len(rois.files)
+    images = map(ImageData,data.next_image(),rois.next_image())
+    for image in images:
+        print(image.data_name,image.roi_name)
+        #in seperate lines should make the error easier to follow
+        print("means")
+        print(image.data_mean())
+        print(image.mean())
+        print("medians")
+        print(image.data_median())
+        print(image.median())
+        # the mode functions are not implemented anyway,
+        #no need to test them yet
+        print('---')
+    

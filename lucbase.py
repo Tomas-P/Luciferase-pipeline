@@ -185,8 +185,8 @@ I hope."""
 
     def mean(self):
         "finds the mean of value of an image."
-        total = image.data.sum()
-        return total / (len(image.data) * len(image.data[0]))
+        total = self.data.sum()
+        return total / (len(self.data) * len(self.data[0]))
 
     def data_mean(self):
         "Finds the mean of data in the image."
@@ -198,10 +198,6 @@ I hope."""
                 datapoints += 1
         return total / datapoints
 
-    def mode(self):
-        return NotImplemented
-    def data_mode(self):
-        return NotImplemented
 
 if __name__ == '__main__':
     # more to check the module works than anything else

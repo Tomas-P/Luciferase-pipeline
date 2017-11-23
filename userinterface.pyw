@@ -1,12 +1,12 @@
 # modules from the application
 import analysis
-import imagej_inteface
+import imagej_interface
 import lucbase
 import processing
 import regionsofinterest as regions
 
 # modules to make a user interface
-import tkinter,
+import tkinter
 import tkinter.ttk as ttk
 
 #use the process class to make the
@@ -20,12 +20,9 @@ DATA = lucbase.Folder(config[lucbase.DATA])
 ROI = lucbase.Folder(config[lucbase.ROI])
 RAW = lucbase.Folder(config[lucbase.RAW])
 
-# the base window
-root = tkinter.Tk()
-
 # the first window
 # where the user will deide what operations to perform
-window1 = tkinter.Toplevel(root)
+window1 = tkinter.Tk()
 
 # tkinter variables to carry information
 roi,analyze,process = tkinter.IntVar(),tkinter.IntVar(),tkinter.IntVar()
@@ -40,10 +37,7 @@ to_analyze = ttk.Checkbutton(window1,
 to_process = ttk.Checkbutton(window1,
                              text = "process the images and filter out noise",
                              variable = process)
-# an exit button to stop the entire program
-halt = ttk.Button(root,
-                  text="Halt the program",
-                  command = root.destroy)
+
 
 # a button to tell the program settings are complete
 first_step = ttk.Button(window1,
@@ -51,10 +45,9 @@ first_step = ttk.Button(window1,
                         command = window1.destroy)
 
 # make sure everything is displayed
-find_roi.pack()
-to_analyze.pack()
-to_process.pack()
-halt.pack()
+find_roi.pack(fill=tkinter.X)
+to_analyze.pack(fill=tkinter.X)
+to_process.pack(fill=tkinter.X)
 first_step.pack()
 # now have window1's event loop run until it is destroyed
 # to get the desired information
@@ -69,8 +62,10 @@ window1.mainloop()
 if process.get():
 
     # ask the user to use the old or new process
-    version = tkinter.IntVar()
-    pwindow1 = tkinter.Toplevel(root)
+    throwaway = tkinter.Tk()
+    version = tkinter.IntVar(throwaway)
+    throwaway.destroy()
+    pwindow1 = tkinter.Tk()
 
     new = ttk.Radiobutton(pwindow1,
                           text="Use the newer processing mechanism",
@@ -98,11 +93,11 @@ if process.get():
 
 # all processing actions are now complete and we can move to finding
 # regions of interest
-if find_roi.get():
+if roi.get():
     # luckily for us, the entire process of finding regions of interest
     # is a single function, but the user needs to be made aware they need
     # to wait for a while and then close out ImageJ to continue
-    rwindow = tkinter.Toplevel(root)
+    rwindow = tkinter.Tk()
     message = ttk.Label(rwindow,text="An ImageJ window will now display.Wait for the operations to finish, then close the main ImageJ window")
     ok = ttk.Button(rwindow, text="Ok",command=rwindow.destroy)
     # ensure everything is displayed
@@ -117,10 +112,10 @@ if find_roi.get():
 # data and regions of interest
 # we can now think about how to analyze
 # the images
-if to_analyze.get():
+if analyze.get():
     # We will need more information from the user
     # Ask them to choose which measures to use
-    optionscreen = tkinter.Toplevel(root)
+    optionscreen = tkinter.Tk()
     # use to represent two different approaches to averages
     mean, dmean = tkinter.IntVar(), tkinter.IntVar()
     median, dmedian = tkinter.IntVar(), tkinter.IntVar()
@@ -141,44 +136,37 @@ if to_analyze.get():
         mtable = analysis.make_table(lucbase.ImageData.mean,
                                     analysis.image_list(DATA, ROI)
                                     )
-        tables.append('mtable')
+        tables.append(['mtable',mtable])
 
     if dmean.get():
         dmtable = analysis.make_table(lucbase.ImageData.data_mean,
                                     analysis.image_list(DATA, ROI)
                                     )
-        tables.append('dmtable')
+        tables.append(['dmtable',dmtable])
 
     if median.get():
         mediantable = analysis.make_table(lucbase.ImageData.median,
                                     analysis.image_list(DATA, ROI)
                                     )
-        tables.append('mediantable')
+        tables.append(['mediantable',mediantable])
 
     if dmedian.get():
         dmediantable = analysis.make_table(lucbase.ImageData.median,
                                     analysis.image_list(DATA, ROI)
                                            )
-        tables.append('dmediantable')
+        tables.append(['dmediantable',dmediantable])
 
+    results = tkinter.Tk()
     windows = []
-    for table in tables:
-        windows.append(tkinter.Toplevel(root))
-        tbl = eval(table)
-        win = windows[-1]
-        t = ''
-        for row in tbl:
-            t = f'{t}{row}\n'
-
-        if table='mtable':
-            tkinter.Label(win, text="naive means").pack(side=tkinter.TOP)
-        elif table='dmtable':
-            tkinter.Label(win,text="data means").pack(side=tkinter.TOP)
-        elif table='mediantable':
-            tkinter.Label(win,text="naive medians").pack(side=tkinter.TOP)
-        elif table='dmediantable':
-            tkinter.Label(win, text="data medians").pack(side=tkinter.TOP)
-        
-        tkinter.Text(win,text=t).pack(fill=tkinter.X)
-        tkinter.Button(win,text="Done",command=win.destroy).pack(side=tkinter.BOTTOM)
-        Process(target=win.mainloop).start()
+    for name,table in tables:
+        tbl = ''
+        for row in table:
+            tbl = f'{tbl}{row}\n'
+        wn = tkinter.Toplevel(results)
+        windows.append(wn)
+        ttk.Label(wn,text=name).pack(side=tkinter.TOP,fill=tkinter.X)
+        text = tkinter.Text(wn)
+        text.insert(tkinter.END, tbl)
+        text.pack(fill=tkinter.X)
+    ttk.Button(results,text="close windows",command=results.destroy).pack()
+    results.mainloop()

@@ -30,12 +30,13 @@ for(x=0;x<getWidth();x++){
     command = '--headless -eval "{}"'.format(macro)
     return ImageJ.run(command)
 
-def getvalues(segment1_out:str)->list:
+def getvalues(segment1_out:str):
     values = []
     segment = segment1_out.strip('\r')
     rows = [item for item in segment.split('\n') if item!='']
     for row in rows:
-        x,y,val = row.split(' ')
+        items = row.split(' ')
+        x, y, val = items
         x = int(x)
         y = int(y)
         val = int(val)
@@ -45,9 +46,10 @@ def getvalues(segment1_out:str)->list:
 def to_array(getvalues_out:list)->np.ndarray:
     width = max(map(lambda iterable: iterable[0], getvalues_out)) 
     height = max(map(lambda iterable: iterable[1], getvalues_out))
-    array = np.empty((width,height),dtype=bool)
+    array = np.empty((width+1,height+1),dtype=int)
     for x,y,val in getvalues_out:
-        array[x][y] = val
+        array[y][x] = val
+        # this looks wrong but it makes sure the image is rotated the right way
 
     return array
         

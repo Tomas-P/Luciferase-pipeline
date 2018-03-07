@@ -37,17 +37,6 @@ class ImageJ:
         p.start()
         return p
         
-def editor():
-    from tkinter import Tk,Text,Button,StringVar
-    base = Tk()
-    text_var = StringVar(base)
-    textbox = Text(base)
-    textbox.pack()
-    Button(base,command=lambda:text_var.set(textbox.get("0.0","end")),text="save").pack()
-    Button(base,command=base.destroy,text="exit").pack()
-    base.mainloop()
-    return text_var.get()
-
 def prepare(macro:str)->str:
     def oneline_ize(string):
         return ''.join(string.split('\n'))

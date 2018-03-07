@@ -30,9 +30,11 @@ for(x=0;x<getWidth();x++){
     command = '--headless -eval "{}"'.format(macro)
     return ImageJ.run(command)
 
-def getvalues(segment1_out:str):
+def getvalues(segment1_out:str)->list:
     values = []
-    for row in segment1_out.split('\r\n'):
+    segment = segment1_out.strip('\r')
+    rows = [item for item in segment.split('\n') if item!='']
+    for row in rows:
         x,y,val = row.split(' ')
         x = int(x)
         y = int(y)

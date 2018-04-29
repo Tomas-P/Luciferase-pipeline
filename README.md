@@ -16,3 +16,4 @@ The scripts in the repository have the following dependencies:
 * os.path
 
 Of these, pandas, numpy, and matplotlib are not in the standard library. You should be able to install them through pip.
+I have created scripts to install these libraries, but use the install scripts at your own risk, I have not tested them.

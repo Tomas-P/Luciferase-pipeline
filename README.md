@@ -17,3 +17,17 @@ The scripts in the repository have the following dependencies:
 
 Of these, pandas, numpy, and matplotlib are not in the standard library. You should be able to install them through pip.
 I have created scripts to install these libraries, but use the install scripts at your own risk, I have not tested them.
+
+##How to use
+Run the run_me.py program.
+Answer the prompt about whether you want the median or average values.
+Wait for the ImageJ program to launch, then answer any relevant prompts originating from ImageJ.
+Wait until all ImageJ operations finish.
+Answer the "select .csv with data" prompt.
+Wait for the program to finish.
+
+##How to set up.
+Install ImageJ.
+Download the repository.
+Create an RoiSet.zip file for your dataset.
+Go into the Tomas_Pipeline.py plugin and change the 25 to the number of images in you data set.

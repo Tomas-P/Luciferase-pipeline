@@ -7,3 +7,11 @@ This plugin takes a folder of images, a set of ROIs created in the ImageJ RoiMan
 It outputs a .csv file in the folder for output that contains the mean and median gray value for each plant in the image
 at each stack position.
 I think I can write a program that takes this .csv file and produces a figure from it.
+
+The scripts in the repository have the following dependencies:
+* tkinter
+* pandas
+* numpy
+* matplotlib
+* os.path
+Of these, pandas, numpy, and matplotlib are not in the standard library. You should be able to install them through pip.

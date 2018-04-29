@@ -6,8 +6,8 @@ Created on Fri Apr 13 20:35:38 2018
 """
 
 import subprocess as sub
-import config
-import folder
+from old import config
+from old import folder
 
 def imagej_name():
     configuration = config.configuration()

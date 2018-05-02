@@ -9,14 +9,14 @@ def grids():
     means,medians = align_temporal.to_grids(two_dim)
     return means,medians
 
-def example_1():
+def graph_means():
     'Display the means of each plant over time.'
     means,medians = grids()
     # My idea of time and pos is transposed from pyplot's idea of time and pos
     pyplot.plot(means.T)
     pyplot.show()
 
-def example_2():
+def graph_averages():
     'Display the medians of each plant over time.'
     means,medians = grids()
     # My idea of time and place is transposed from pyplot's idea of time and place

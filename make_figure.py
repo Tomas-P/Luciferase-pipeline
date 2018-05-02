@@ -16,7 +16,7 @@ def graph_means():
     pyplot.plot(means.T)
     pyplot.show()
 
-def graph_averages():
+def graph_medians():
     'Display the medians of each plant over time.'
     means,medians = grids()
     # My idea of time and place is transposed from pyplot's idea of time and place

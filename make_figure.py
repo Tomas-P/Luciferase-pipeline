@@ -14,6 +14,9 @@ def graph_means():
     means,medians = grids()
     # My idea of time and pos is transposed from pyplot's idea of time and pos
     pyplot.plot(means.T)
+    pyplot.ylabel("Average Brightness")
+    pyplot.xlabel("Time")
+    pyplot.title("Average brighness of plants over time")
     pyplot.show()
 
 def graph_medians():
@@ -21,4 +24,7 @@ def graph_medians():
     means,medians = grids()
     # My idea of time and place is transposed from pyplot's idea of time and place
     pyplot.plot(medians.T)
+    pyplot.ylabel("Median Brightness")
+    pyplot.xlabel("Time")
+    pyplot.title("Median brighness of plants over time")
     pyplot.show()

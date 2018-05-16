@@ -65,5 +65,5 @@ s = folder_to_stack(f)
 s = register(s)
 s = median(s)
 rm = get_rois(zfile)
-measure_stack(s,25,rm) # there are twenty-five images in my data set
+measure_stack(s,s.getImageStackSize(),rm)
 save_results(m_folder)

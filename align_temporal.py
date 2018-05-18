@@ -30,10 +30,8 @@ at a number n corressponds to the measurements of plant n over time."""
 
 def to_grids(grid):
     '''This takes a dictionary of the sort created by to_two_d().
-It produces two numpy arrays, one with the plant means,
-and the other with the plant medians. The grids ar arrayed such that
-the first axis (call it x) corresponds to which plant is being refered to,
-and the second axis (call it y) corresponds to which slice/timepoint is referred to.'''
+It produces two numpy arrays, one with the means of each plant over time,
+and the other with the medians of each plant over time.'''
     mean_grid = ndarray((len(grid),len(grid[0])))
     median_grid = ndarray((len(grid),len(grid[0])))
 
@@ -42,7 +40,9 @@ and the second axis (call it y) corresponds to which slice/timepoint is referred
             mean_grid[i,j] = data_pos.Mean
             median_grid[i,j] = data_pos.Median
 
-    return mean_grid, median_grid
+    # transposing the grids makes them line up with what pyplot expects
+    # as the X or time axis and the Y or intensity axis.
+    return mean_grid.T, median_grid.T
 
 
 # check to make sure everything works by running through it.

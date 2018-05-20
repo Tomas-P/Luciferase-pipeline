@@ -17,16 +17,15 @@ def average_group(group):
         )
 
 def plot_groups(*groups):
-    arglist = []
-    for group in groups:
-        arglist.append(range(len(group)))
-        arglist.append(group)
-
-    pyplot.plot(*arglist)
+    
+    for i,group in enumerate(groups):
+        pyplot.plot(list(range(len(group))),group,label = "group {}".format(i))
+        
+    pyplot.legend()
     pyplot.show()
 
 if __name__ == '__main__':
-    CSVNAME = "C:/Users/Tomas/Documents/Tomas_Pipeline_Measurements.csv"
+    CSVNAME = "C:/Users/Tomas/Documents/Luciferase/Tomas_Pipeline_Measurements.csv"
 
     means,medians = align_temporal.to_grids(
         align_temporal.to_two_d(

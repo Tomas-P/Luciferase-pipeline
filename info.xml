@@ -1,6 +1,6 @@
 <info>
-	<csv>C:/Users/Tomas/Documents/Luciferase/Tomas_Pipeline_Measurements.csv</csv>
-	<images>C:/Users/Tomas/Documents/Luciferase/images/data/</images>
-	<ROI_archive>C:/Users/Tomas/Documents/Luciferase/code/RoiSet.zip</ROI_archive>
-	<imagej>C:/Users/Tomas/Documents/Fiji.app/</imagej>
+	<csv>/home/tomas/Documents/Luciferase/Tomas_Pipeline_Measurements.csv</csv>
+	<images>/home/tomas/Documents/Luciferase/images/data/</images>
+	<ROI_archive>/home/tomas/Documents/Luciferase/code/RoiSet.zip</ROI_archive>
+	<imagej>/home/tomas/Fiji.app/</imagej>
 </info>

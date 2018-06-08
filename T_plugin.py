@@ -40,19 +40,22 @@ def save_results(result_filename):
 	IJ.saveAs("Results", result_filename)
 	return None
 
-name = sys.argv[0]
-folder = name[:name.rfind('\\')].replace('\\','/')
-print(folder)
-tree = et.parse(folder + '/info.xml')
-out = tree.findtext('csv')
-image_foldername = tree.findtext('images')
-roi_archive = tree.findtext('ROI_archive')
-print(out,image_foldername,roi_archive)
+def main():
+	name = sys.argv[0]
+	folder = name[:name.rfind('/')]
+	print(folder)
+	tree = et.parse(folder + '/info.xml')
+	out = tree.findtext('csv')
+	image_foldername = tree.findtext('images')
+	roi_archive = tree.findtext('ROI_archive')
+	print(out,image_foldername,roi_archive)
+	
+	stack = folder_to_stack(image_foldername)
+	stack = register(stack)
+	stack = median(stack)
+	rm = get_rois(roi_archive)
+	measure_stack(stack,stack.getImageStackSize(),rm)
+	save_results(out)
+	print("Done")
 
-stack = folder_to_stack(image_foldername)
-stack = register(stack)
-stack = median(stack)
-rm = get_rois(roi_archive)
-measure_stack(stack,stack.getImageStackSize(),rm)
-save_results(out)
-print("Done")
+main()

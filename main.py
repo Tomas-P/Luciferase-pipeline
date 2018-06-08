@@ -6,6 +6,6 @@ from matplotlib import pyplot
 
 info = ElementTree.parse('info.xml')
 imagejfolder = info.findtext('imagej')
-sub.run([imagejfolder+'ImageJ-win64.exe','--run',abspath('T_plugin.py')])
+sub.run([imagejfolder+'ImageJ-linux64','--run',abspath('T_plugin.py')])
 main()
 pyplot.show()

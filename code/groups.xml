@@ -1,0 +1,45 @@
+<groups>
+	<!--Every group element follows the same simple pattern.
+	There is a number element, which is unique to each group.
+	It is not used yet, but it probably will be used for ID purpouses
+	later. Then it has the lower element. The lower element marks the index
+	of the first ROI in the group in the RoiSet.zip file used to identify plants.
+	The higher element marks the index of the last ROI in the group in the
+	RoiSet.zip file used to identify plants. The bounds of the groups should
+	not overlap.-->
+	<group>
+		<number>0</number>
+		<lower>1</lower>
+		<higher>30</higher>
+	</group>
+	<group>
+		<number>1</number>
+		<lower>31</lower>
+		<higher>60</higher>
+	</group>
+	<group>
+		<number>2</number>
+		<lower>61</lower>
+		<higher>90</higher>
+	</group>
+	<group>
+		<number>3</number>
+		<lower>91</lower>
+		<higher>120</higher>
+	</group>
+	<group>
+		<number>4</number>
+		<lower>121</lower>
+		<higher>150</higher>
+	</group>
+	<group>
+		<number>5</number>
+		<lower>151</lower>
+		<higher>180</higher>
+	</group>
+	<group>
+		<number>6</number>
+		<lower>181</lower>
+		<higher>209</higher>
+	</group>
+</groups>

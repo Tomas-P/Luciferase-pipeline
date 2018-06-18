@@ -22,8 +22,13 @@ def open_sequence(xml_tree):
 	IJ.run(stack, "Enhance Contrast...", 
 	"saturated=0.3 equalize process_all")
 	IJ.run(stack, "Median...", "radius=2 stack")
+	IJ.run(stack, "Subtract Background...", "rolling=50 stack")
 	return stack
-	
+
+def SIFT_register(stack):
+	IJ.run(stack, "Linear Stack Alignment with SIFT", "initial_gaussian_blur=1.60 steps_per_scale_octave=3 minimum_image_size=64 maximum_image_size=1024 feature_descriptor_size=4 feature_descriptor_orientation_bins=8 closest/next_closest_ratio=0.92 maximal_alignment_error=25 inlier_ratio=0.05 expected_transformation=Rigid interpolate")
+	return IJ.getImage()
+
 def xmltree():
 	script_file = sys.argv[0]
 	folder = script_file[:script_file.rfind('/')]+'/'
@@ -55,7 +60,8 @@ def open_rois(tree):
 def main():
 	xtree = xmltree()
 	calc = ImageCalculator()
-	stack = open_sequence(xtree)
+	proto_stack = open_sequence(xtree)
+	stack = SIFT_register(proto_stack)
 	mask = make_mask(stack)
 	mask.show()
 	filtered = apply_mask(calc,stack, mask)

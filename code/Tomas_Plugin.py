@@ -57,18 +57,35 @@ def open_rois(tree):
 	rm.runCommand("Open", roi_set)
 	return rm
 
+def get_background_comparison(stack, tree):
+	# The background mean is the only important thing
+	IJ.run("Set Measurements...", "mean stack redirect=None decimal=3")
+	# read in the selection info from the xml tree
+	bx,by,width, height = eval(tree.findtext("bg"))
+	# create a rectangular selection
+	stack.setRoi(bx,by,width,height)
+	# measure the selection in each slice
+	for i in range(stack.getImageStackSize()):
+		IJ.run(stack, "Measure", "")
+		IJ.run(stack, "Next Slice [>]", "")
+	# save the results
+	IJ.saveAs("Results", tree.findtext("bgcsv"))
+	# clean up for the actual program
+	IJ.run("Clear Results", "")
+	
 def main():
 	xtree = xmltree()
 	calc = ImageCalculator()
 	proto_stack = open_sequence(xtree)
 	stack = SIFT_register(proto_stack)
+	get_background_comparison(stack, xtree)
 	mask = make_mask(stack)
 	mask.show()
 	filtered = apply_mask(calc,stack, mask)
 	filtered.show()
+	set_measurements()
 	roi_manager = open_rois(xtree)
 	measure(roi_manager, filtered)
 	save_results(xtree.findtext("csv"))
-	print("Complete")
 
 main()

@@ -12,10 +12,14 @@ from os.path import abspath
 import graph
 from matplotlib import pyplot
 
-info = et.parse("info.xml")
-ij_folder = info.findtext("imagej")
-imagej_name = ij_folder + "ImageJ-linux64"
-sub.run([imagej_name, '--run', abspath("Tomas_Plugin.py")])
-graph.graph()
-pyplot.legend()
-pyplot.show()
+def main():
+    info = et.parse("info.xml")
+    ij_folder = info.findtext("imagej")
+    imagej_name = ij_folder + "ImageJ-linux64"
+    sub.run([imagej_name, '--run', abspath("Tomas_Plugin.py")])
+    graph.graph()
+    pyplot.legend()
+    pyplot.show()
+
+if __name__ == '__main__':
+    main()

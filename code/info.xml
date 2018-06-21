@@ -9,7 +9,7 @@
 	
 	<!--The csv element stores the filename where the measurements will be
 	stored after being measured but before being graphed.-->
-	<csv>/home/tomas/Documents/Luciferase/Tomas_Pipeline_Measurements.csv</csv>
+	<csv>/home/tomas/Documents/Luciferase/plant_measurements.csv</csv>
 	
 	<!--The images element is the folder in which the images from which
 	the measurements are taken are stored.-->
@@ -27,4 +27,11 @@
 	<!--The mask is a binary image used to remove noise pixels from
 	the data and make the resulting graph more accurate.-->
 	<mask>/home/tomas/Documents/Luciferase/images/roi.tif</mask>
+	
+	<!-- bx, by, width, & height of background region -->
+	<bg>(32,192,352,1620)</bg>
+	
+	<!-- A csv file to store the background info for comparison-->
+	<bgcsv>/home/tomas/Documents/Luciferase/background_measurements.csv</bgcsv>
+	
 </info>

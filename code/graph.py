@@ -17,6 +17,9 @@ def get_tree():
 def get_name(tree):
     return tree.findtext("csv")
 
+def get_background_name(tree):
+    return tree.findtext("bgcsv")
+
 def plants_per_slice(csv):
     
     for i in range(len(csv)):
@@ -61,6 +64,12 @@ def graph():
     for i,group in enumerate(reduced):
         pyplot.plot(group,label="Group {}".format(i))
     
+    background = read_csv(get_background_name(get_tree()))
+    bgpoints = []
+    for i in range(len(background)):
+        bgpoints.append(background.Mean[i])
+    
+    pyplot.plot(bgpoints, label="Background Region Average")
     return None
 
 if __name__ == '__main__':

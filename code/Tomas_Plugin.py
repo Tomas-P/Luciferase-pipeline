@@ -87,5 +87,12 @@ def main():
 	roi_manager = open_rois(xtree)
 	measure(roi_manager, filtered)
 	save_results(xtree.findtext("csv"))
+	roi_manager.close()
 
 main()
+IJ.run("Close All", "")
+IJ.selectWindow("Results")
+IJ.run("Close")
+IJ.selectWindow("Log")
+IJ.run("Close")
+IJ.run("Quit")

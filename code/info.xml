@@ -24,10 +24,6 @@
 	are stored.-->
 	<imagej>/home/tomas/Fiji.app/</imagej>
 	
-	<!--The mask is a binary image used to remove noise pixels from
-	the data and make the resulting graph more accurate.-->
-	<mask>/home/tomas/Documents/Luciferase/images/roi.tif</mask>
-	
 	<!-- bx, by, width, & height of background region -->
 	<bg>(32,192,352,1620)</bg>
 	

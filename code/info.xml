@@ -18,7 +18,7 @@
 	<!--The ROI_archive tag is the filename where the set of regions of interest
 	defined by the program's user are saved. It is created using the ROI manager
 	in ImageJ.-->
-	<ROI_archive>/home/tomas/Documents/Luciferase/RoiSet.zip</ROI_archive>
+	<ROI_archive>/home/tomas/Documents/Luciferase/At_data_ROIS.zip</ROI_archive>
 	
 	<!--The imagej element shows the ImageJ folder in which all ImageJ items
 	are stored.-->
@@ -30,4 +30,8 @@
 	<!-- A csv file to store the background info for comparison-->
 	<bgcsv>/home/tomas/Documents/Luciferase/background_measurements.csv</bgcsv>
 	
+	<!--the radius of an Roi-->
+	<roi_size>25</roi_size>
+	<!--The percentage of data pixels required for an roi-->
+	<roi_min_percent_area>90</roi_min_percent_area>
 </info>

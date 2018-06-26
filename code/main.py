@@ -30,7 +30,7 @@ def graph_groups():
     pyplot.show()
 
 def groups_of_interest():
-    return map(int, input("Any interesting groups?").split(','))
+    return list(map(int, input("Any interesting groups?").split(',')))
 
 def get_group_element(group_number):
     group_tree = et.parse('groups.xml')
@@ -45,6 +45,9 @@ def get_array():
 
 # Graph the information
 if __name__ == '__main__':
+    pyplot.title("Group average intensity over time")
+    pyplot.xlabel("Time")
+    pyplot.ylabel("Intensity")
     graph_groups()
     
     group_nums = groups_of_interest()
@@ -61,4 +64,7 @@ if __name__ == '__main__':
     for group_number in groups:
         print("group",group_number)
         pyplot.plot(groups[group_number])
+        pyplot.title("Group {} plants over time".format(group_number))
+        pyplot.xlabel("Time")
+        pyplot.ylabel("Intensity")
         pyplot.show()

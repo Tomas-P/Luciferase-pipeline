@@ -25,12 +25,17 @@ def graph_groups():
     graph.graph()
     # create the graph legend , assuming the time to execute
     # is linear for the number of images.
-    pyplot.legend()
+    legend = pyplot.legend()
+    # make the legend translucent
+    legend.get_frame().set_alpha(0.5)
     # display the graph
     pyplot.show()
 
 def groups_of_interest():
-    return list(map(int, input("Any interesting groups?").split(',')))
+    try:
+        return list(map(int, input("Any interesting groups?").split(',')))
+    except ValueError:
+        return None
 
 def get_group_element(group_number):
     group_tree = et.parse('groups.xml')
@@ -51,20 +56,22 @@ if __name__ == '__main__':
     graph_groups()
     
     group_nums = groups_of_interest()
-    plant_grid = get_array()
-    groups = {}
-    loc = 1
-    for group_number in group_nums:
-        group_elem = get_group_element(group_number)
-        lower = int(group_elem.findtext("lower"))
-        higher = int(group_elem.findtext("higher"))
-        group = graph.extract_group(plant_grid,lower,higher)
-        groups[group_number] = group
     
-    for group_number in groups:
-        print("group",group_number)
-        pyplot.plot(groups[group_number])
-        pyplot.title("Group {} plants over time".format(group_number))
-        pyplot.xlabel("Time")
-        pyplot.ylabel("Intensity")
-        pyplot.show()
+    if group_nums != None:
+        plant_grid = get_array()
+        groups = {}
+        loc = 1
+        for group_number in group_nums:
+            group_elem = get_group_element(group_number)
+            lower = int(group_elem.findtext("lower"))
+            higher = int(group_elem.findtext("higher"))
+            group = graph.extract_group(plant_grid,lower,higher)
+            groups[group_number] = group
+        
+        for group_number in groups:
+            print("group",group_number)
+            pyplot.plot(groups[group_number])
+            pyplot.title("Group {} plants over time".format(group_number))
+            pyplot.xlabel("Time")
+            pyplot.ylabel("Intensity")
+            pyplot.show()

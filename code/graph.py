@@ -69,7 +69,7 @@ def graph():
     for i in range(len(background)):
         bgpoints.append(background.Mean[i])
     
-    pyplot.plot(bgpoints, label="Background Region Average")
+    pyplot.plot(bgpoints, label="Background")
     return None
 
 if __name__ == '__main__':

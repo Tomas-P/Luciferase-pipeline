@@ -1,0 +1,33 @@
+<info>
+	<!-- This file stores important information for running the pipeline.
+	All elements are either a folder or a filename.
+	Forward slashes are used for a few reasons. First, the pipeline is written
+	to run on Linux. Second, backslashes have special meaning in Python. 
+	Third, Python can use forward slashes to specify a filename or folder.
+	Note that filenames will end in an extension, but foldernames will end 
+	in a forward slash.-->
+	
+	<!--The csv element stores the filename where the measurements will be
+	stored after being measured but before being graphed.-->
+	<csv>/home/tomas/Documents/Colleen_Lab/LucData/plant_measurements.csv</csv>
+	
+	<!--The images element is the folder in which the images from which
+	the measurements are taken are stored.-->
+	<images>/home/tomas/Documents/Colleen_Lab/bhb_luc_003_1979-2/Pos0/</images>
+	
+	<!--The ROI_archive tag is the filename where the set of regions of interest
+	defined by the program's user are saved. It is created using the ROI manager
+	in ImageJ.-->
+	<ROI_archive>/home/tomas/Documents/Colleen_Lab/LucData/setariaRoi.zip</ROI_archive>
+	
+	<!--The imagej element shows the ImageJ folder in which all ImageJ items
+	are stored.-->
+	<imagej>/home/tomas/Fiji.app/</imagej>
+	
+	<!-- bx, by, width, & height of background region -->
+	<bg>(20,48,512,1960)</bg>
+	
+	<!-- A csv file to store the background info for comparison-->
+	<bgcsv>/home/tomas/Documents/Colleen_Lab/LucData/background_measurements.csv</bgcsv>
+	
+</info>

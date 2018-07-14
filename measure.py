@@ -1,6 +1,7 @@
 import sys
 from ij import ImagePlus,IJ
 from ij.plugin.frame import RoiManager
+import json
 
 def folder():
 	script = sys.argv[0]
@@ -12,8 +13,15 @@ def open_stack():
 
 def open_roi_archive():
 	rm = RoiManager()
-	filename = folder() + "/RoiSet.zip"
-	rm.runCommand("Open", filename)
+	optfile = open("options.json")
+	options = json.load(optfile)
+	optfile.close()
+	if options["user roi"]:
+		rfile = options["roi file"]
+		rm.runCommand("Open",rfile)
+	else:
+		filename = folder() + "/RoiSet.zip"
+		rm.runCommand("Open", filename)
 	return rm
 
 def measure():

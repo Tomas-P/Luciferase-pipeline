@@ -7,7 +7,7 @@ Created on Tue Jul 10 09:48:24 2018
 """
 
 import tkinter as tk
-from tkinter.filedialog import askdirectory
+from tkinter.filedialog import askdirectory, askopenfilename
 from constants import CONSTANTS
 import json
 from os.path import isfile
@@ -69,13 +69,21 @@ def user_inteface():
     
     top_label = tk.Label(rwindow, text="Pipeline Options")
     
-    preserve = tk.BooleanVar()
+    user_def_roi = tk.BooleanVar()
+    user_def_groups = tk.BooleanVar()
     
-    preserve_switch = tk.Checkbutton(rwindow,
-                                     text="Check to preserve options.json after the pipeline finished.",
-                                     variable=preserve,
-                                     onvalue=True,
-                                     offvalue=False)
+    udroi = tk.Checkbutton(rwindow,text="User defined rois",variable=user_def_roi,onvalue=True,offvalue=False)
+    udgroup = tk.Checkbutton(rwindow,text='User defined groups',variable=user_def_groups,onvalue=True,offvalue=False)
+    
+    rwidth, rheight = tk.IntVar(), tk.IntVar()
+    roi_w_slider = tk.Scale(rwindow,from_=0,to=200,variable=rwidth,orient=tk.HORIZONTAL)
+    roi_h_slider = tk.Scale(rwindow,from_=0,to=200,variable=rheight,orient=tk.HORIZONTAL)
+    
+    num_groups,member_count = tk.IntVar(),tk.IntVar()
+    ng_slider = tk.Scale(rwindow,from_=1,to=30,variable=num_groups,orient=tk.HORIZONTAL)
+    mc_slider = tk.Scale(rwindow,from_=1,to=50,variable=member_count,orient=tk.HORIZONTAL)
+    nglabel = tk.Label(rwindow,text="number of groups")
+    mclabel = tk.Label(rwindow,text="group member count")
     
     top_label.grid(row=0)
     
@@ -88,7 +96,7 @@ def user_inteface():
     setaria_button.grid(row=3,column=1)
     other_button.grid(row=4,column=1)
     
-    bglabel.grid(row=5)
+    bglabel.grid(row=5,columnspan=2)
     
     bx_label.grid(row=6,column=0)
     bx_slider.grid(row=6,column=1)
@@ -102,19 +110,66 @@ def user_inteface():
     height_label.grid(row=9,column=0)
     height_slider.grid(row=9,column=1)
     
-    preserve_switch.grid(row=10,columnspan=2)
+    #preserve_switch.grid(row=10,columnspan=2)
+    udgroup.grid(row=10,column=0)
+    udroi.grid(row=10,column=1)
     
-    donebutton.grid(row=11)
+    roi_w_slider.grid(row=11,column=1,columnspan=2)
+    roi_h_slider.grid(row=12,column=1,columnspan=2)
+    tk.Label(text="roi width").grid(row=11, column=0)
+    tk.Label(text="roi height").grid(row=12, column=0)
+    
+    tk.Label(rwindow,text="Group attributes").grid(row=13,columnspan=2)
+    nglabel.grid(row=14,column=0)
+    ng_slider.grid(row=14,column=1,columnspan=2)
+    
+    mclabel.grid(row=15,column=0)
+    mc_slider.grid(row=15,column=1,columnspan=2)
+    
+    pause = tk.BooleanVar(value=False)
+    tk.Checkbutton(rwindow,variable=pause,onvalue=True,offvalue=False,text="Pause at steps").grid(row=16)
+    
+    donebutton.grid(row=17)
     
     rwindow.mainloop()
     
+    if user_def_roi.get() or user_def_groups.get():
+        window2 = tk.Tk()
+        roiname = tk.StringVar(value="Choose the roi archive")
+        groupname = tk.StringVar(value="Choose the group list file")
+        roientry = tk.Entry(window2,textvariable=roiname)
+        groupentry = tk.Entry(window2,textvariable=groupname)
+        roibutton = tk.Button(window2,text="Browse(ROI)",command=lambda:roiname.set(askopenfilename(title="Select Roi archive")))
+        groupbutton = tk.Button(window2,text="Browse(Group)",command=lambda:groupname.set(askopenfilename(title="Select group definition file")))
+        donebut = tk.Button(window2,text="Done",command=window2.destroy)
+        
+        tk.Label(window2,text="Get definitions").grid(row=0,columnspan=2)
+        roientry.grid(row=1,column=0)
+        roibutton.grid(row=1,column=1)
+        groupentry.grid(row=2,column=0)
+        groupbutton.grid(row=2,column=1)
+        donebut.grid(row=3)
+        
+        window2.mainloop()
+        
     options["images"] = text.get()
-    options["selection algorithim"] = selection_algorithim.get()
+    options["selection algorithm"] = selection_algorithim.get()
     options["background"] = {"bx" : bx.get(),
            "by" : by.get(),
            "width" : width.get(),
-           "height" : height.get()}
-    options["preserve"] = preserve.get()
+           "height" : height.get()
+           }
+    options["rwidth"] = rwidth.get()
+    options["rheight"] = rheight.get()
+    options["group count"] = num_groups.get()
+    options["group member count"] = member_count.get()
+    options["user roi"] = user_def_roi.get()
+    options["user groups"] = user_def_groups.get()
+    options["pause"] = pause.get()
+    
+    if options["user roi"] or options["user groups"]:
+        options["roi file"] = roiname.get()
+        options["group file"] = groupname.get()
     
     return options
 

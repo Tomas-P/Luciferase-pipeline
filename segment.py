@@ -23,3 +23,4 @@ def main():
 
 if script.endswith("segment.py"):
 	main()
+	print("Segmentation complete, Archive saved")

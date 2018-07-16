@@ -9,44 +9,47 @@ Created on Wed Jul 11 16:03:58 2018
 from os import path
 import subprocess as sub
 from constants import CONSTANTS
-from time import sleep
 from matplotlib import pyplot
 import analysis
 import options
 import json
 
 def filterprocess():
-    return sub.Popen([CONSTANTS.IMAGEJ,"-port1", "--run", path.abspath("filtering.py")])
+    return sub.Popen([CONSTANTS.IMAGEJ,"-port1", "--run", path.abspath("filtering.py")],stdout=sub.PIPE)
 
 def segmentprocess():
-    return sub.Popen([CONSTANTS.IMAGEJ,"-port2", "--run", path.abspath("segment.py")])
+    return sub.Popen([CONSTANTS.IMAGEJ,"-port2", "--run", path.abspath("segment.py")],stdout=sub.PIPE)
 
 def measure_data():
-    return sub.Popen([CONSTANTS.IMAGEJ,"-port1", "--run", path.abspath("measure.py")])
+    return sub.Popen([CONSTANTS.IMAGEJ,"-port1", "--run", path.abspath("measure.py")],stdout=sub.PIPE)
 
 def measure_background():
-    return sub.Popen([CONSTANTS.IMAGEJ,"-port2", "--run", path.abspath("background.py")])
+    return sub.Popen([CONSTANTS.IMAGEJ,"-port2", "--run", path.abspath("background.py")],stdout=sub.PIPE)
 
 
 def setup(pause=False):
     fp = filterprocess()
     if not options.getoptions()["user roi"]:
         sp = segmentprocess()
-        sleep(4 * 60)
+        line = fp.stdout.readline().decode()
+        while not line.startswith("Filtering complete, stack saved"):
+            line = fp.stdout.readline().decode()
         fp.terminate()
         if pause: # if inspecting the rois is desired
             sp.wait() # wait for the user to close this ImageJ
         else: #otherwise, halt this ImageJ
+            print(sp.stdout.readline().decode())
             sp.terminate()
     else:
-        sleep(4 * 60)
+        print(fp.stdout.readline().decode())
         fp.terminate()
 
 
 def measurement():
     md = measure_data()
     mb = measure_background()
-    sleep(3 * 60)
+    print(md.stdout.readline().decode())
+    print(mb.stdout.readline().decode())
     md.terminate()
     mb.terminate()
 

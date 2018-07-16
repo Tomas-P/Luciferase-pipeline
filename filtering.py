@@ -4,7 +4,6 @@ import sys
 assert sys.version.startswith("2.7.1")
 
 from ij import IJ
-from ij.plugin.frame import RoiManager
 from ij.plugin import ImageCalculator
 import json
 import glob
@@ -66,4 +65,5 @@ def main():
 if sys.argv[0].endswith("filtering.py"):
 	stack = main()
 	stack.show()
+	print("Filtering complete, stack saved")
 

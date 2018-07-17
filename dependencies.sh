@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # install python dependencies
-sudo apt-get install python3 && sudo apt-get install python3-pip && sudo pip3 install numpy && sudo pip3 install pandas && sudo pip3 install matplotlib
+sudo apt-get install python3 && sudo apt-get install python3-pip && sudo pip3 install numpy && sudo pip3 install pandas && sudo pip3 install matplotlib && sudo apt-get install python3-tk
 
 # install ImageJ
 if [ ! -d ~/Fiji.app ]; then

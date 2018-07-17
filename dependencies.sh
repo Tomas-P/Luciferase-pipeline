@@ -6,7 +6,7 @@ sudo apt-get install python3 && sudo apt-get install python3-pip && sudo pip3 in
 # install ImageJ
 if [ ! -d ~/Fiji.app ]; then
 	cd ~
-	wget -O https://downloads.imagej.net/fiji/latest/fiji-linux64.zip
+	wget https://downloads.imagej.net/fiji/latest/fiji-linux64.zip
 	unzip fiji-linux64.zip
 	rm fiji-linux64.zip
 fi

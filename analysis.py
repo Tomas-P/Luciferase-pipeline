@@ -21,12 +21,7 @@ def get_background() -> pd.DataFrame:
 
 
 def count_plants(measurements :pd.DataFrame) -> int:
-	i = 0
-	row = measurements.iloc[i]
-	while row.Slice == 1:
-		i +=1
-		row = measurements.iloc[i]
-	return i
+	return len(measurements[measurements.Slice == 1])
 
 
 def count_slices(measurements :pd.DataFrame) -> int:
@@ -48,14 +43,10 @@ def grid_from_measurements(measures :pd.DataFrame) -> np.ndarray:
 	slices = count_slices(measures)
 	plants = count_plants(measures)
 	grid = makegrid(slices,plants)
-	g = grid_dict(measures, plants)
-	
-	for key in g:
-		for i,data in enumerate(g[key]):
-			grid[int(i),int(key)] = float((data.Area * data.Mean) / (data.Area * (data["%Area"] / 100)))
-	
+	means = (measures.Area * measures.Mean) / (measures.Area * measures["%Area"] / 100)
+	for index,mean in enumerate(means):
+		grid[index % slices][index % plants] = mean
 	return grid
-
 
 def grid_from_background(bg :pd.DataFrame) -> np.ndarray:
 	values = []

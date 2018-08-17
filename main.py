@@ -94,10 +94,13 @@ def main():
         with open(opts["group file"]) as ghandle:
             gbounds = json.load(ghandle)
         for group_number in group_numbers:
-            lbound = gbounds[group_number][0]
-            ubound = gbounds[group_number][1]
-            g = analysis.extract_group(my_grid,lbound,ubound)
-            pyplot.plot(g)
+            subgroup_def = gbounds[group_number]
+            subs = []
+            for lower,upper in subgroup_def:
+                sub = analysis.extract_group(my_grid,lower,upper)
+                subs.append(sub)
+            group = list(map(lambda x : sum(x) / len(x), zip(*subs)))
+            pyplot.plot(group)
             pyplot.title("Group {} plants".format(group_number))
             pyplot.xlabel("Time")
             pyplot.ylabel("Intensity")

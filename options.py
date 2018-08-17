@@ -48,6 +48,12 @@ def user_inteface():
                                   text="Other",
                                   padx=20)
     
+    seed_button = tk.Radiobutton(master=rwindow,
+                                 variable=selection_algorithim,
+                                 value=CONSTANTS.SEEDLING,
+                                 text="seedling",
+                                 padx=20)
+    
     donebutton = tk.Button(rwindow,text="Done",command=rwindow.destroy)
     
     bx,by,width,height = tk.IntVar(),tk.IntVar(),tk.IntVar(),tk.IntVar()
@@ -95,6 +101,7 @@ def user_inteface():
     arabadopsis_button.grid(row=2,column=1)
     setaria_button.grid(row=3,column=1)
     other_button.grid(row=4,column=1)
+    seed_button.grid(row=4,column=2)
     
     bglabel.grid(row=5,columnspan=2)
     
@@ -137,18 +144,24 @@ def user_inteface():
         window2 = tk.Tk()
         roiname = tk.StringVar(value="Choose the roi archive")
         groupname = tk.StringVar(value="Choose the group list file")
+        gtext = tk.StringVar()
+        
         roientry = tk.Entry(window2,textvariable=roiname)
         groupentry = tk.Entry(window2,textvariable=groupname)
         roibutton = tk.Button(window2,text="Browse(ROI)",command=lambda:roiname.set(askopenfilename(title="Select Roi archive")))
         groupbutton = tk.Button(window2,text="Browse(Group)",command=lambda:groupname.set(askopenfilename(title="Select group definition file")))
         donebut = tk.Button(window2,text="Done",command=window2.destroy)
+        group_text = tk.Text(window2,width=25,height=25)
+        group_but = tk.Button(window2,text="Push Group text",command=lambda : gtext.set(group_text.get('1.0',tk.END)))
         
         tk.Label(window2,text="Get definitions").grid(row=0,columnspan=2)
         roientry.grid(row=1,column=0)
         roibutton.grid(row=1,column=1)
         groupentry.grid(row=2,column=0)
         groupbutton.grid(row=2,column=1)
-        donebut.grid(row=3)
+        group_text.grid(row=3)
+        group_but.grid(row=4,column=0)
+        donebut.grid(row=4,column=1)
         
         window2.mainloop()
         
@@ -170,6 +183,8 @@ def user_inteface():
     if options["user roi"] or options["user groups"]:
         options["roi file"] = roiname.get()
         options["group file"] = groupname.get()
+        with open(groupname.get(), 'w') as gfile:
+            json.dump(json.loads(gtext.get()), gfile)
     
     return options
 

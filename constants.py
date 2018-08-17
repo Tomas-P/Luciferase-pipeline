@@ -11,6 +11,7 @@ class CONSTANTS:
     ARABADOPSIS = 0
     SETARIA = 1
     OTHER = 2
+    SEEDLING = 3
     IMAGEJ = _path.expanduser("~/Fiji.app/ImageJ-linux64")
     
     def __setattr__(self,name,value):

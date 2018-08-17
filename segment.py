@@ -19,6 +19,8 @@ def main():
 		return Segment_Algorithms.Setaria.main()
 	elif options["selection algorithm"] == CONSTANTS.OTHER:
 		return Segment_Algoritms.Other.main()
+	elif options["selection algorithm"] == CONSTANTS.SEEDLING:
+		return Segment_Algorithms.At_seeds.main()
 
 
 if script.endswith("segment.py"):

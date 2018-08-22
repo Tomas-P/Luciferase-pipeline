@@ -13,6 +13,8 @@ from matplotlib import pyplot
 import analysis
 import options
 import json
+import numpy
+from functools import reduce
 
 def filterprocess():
     return sub.Popen([CONSTANTS.IMAGEJ,"-port1", "--run", path.abspath("filtering.py")],stdout=sub.PIPE)
@@ -31,15 +33,21 @@ def setup(pause=False):
     fp = filterprocess()
     if not options.getoptions()["user roi"]:
         sp = segmentprocess()
-        line = fp.stdout.readline().decode()
-        while not line.startswith("Filtering complete, stack saved"):
+        if pause:
             line = fp.stdout.readline().decode()
-        fp.terminate()
-        if pause: # if inspecting the rois is desired
-            sp.wait() # wait for the user to close this ImageJ
-        else: #otherwise, halt this ImageJ
+            while not line.startswith("Filtering complete, stack saved"):
+                line = fp.stdout.readline().decode()
+            fp.terminate()
+            print(sp.stdout.readline().decode())
+            sp.communicate()
+        else:
+            line = fp.stdout.readline().decode()
+            while not line.startswith("Filtering complete, stack saved"):
+                line = fp.stdout.readline().decode()
+            fp.terminate()
             print(sp.stdout.readline().decode())
             sp.terminate()
+            
     else:
         print(fp.stdout.readline().decode())
         fp.terminate()
@@ -91,6 +99,7 @@ def main():
             pyplot.ylabel("Intensity")
             pyplot.show()
     else:
+        
         with open(opts["group file"]) as ghandle:
             gbounds = json.load(ghandle)
         for group_number in group_numbers:
@@ -99,7 +108,8 @@ def main():
             for lower,upper in subgroup_def:
                 sub = analysis.extract_group(my_grid,lower,upper)
                 subs.append(sub)
-            group = list(map(lambda x : sum(x) / len(x), zip(*subs)))
+            group = reduce(lambda a,b : numpy.concatenate((a,b),axis=1), subs)
+                
             pyplot.plot(group)
             pyplot.title("Group {} plants".format(group_number))
             pyplot.xlabel("Time")

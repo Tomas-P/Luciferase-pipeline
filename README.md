@@ -5,7 +5,6 @@ The pipeline processes, measures, and graphs data from luciferase images with mi
 while maintaining the option to manually edit or define regions of interest and region of interest groups.
 
 It is run by running the main.py script in python3.
-It can be installed by running install.sh
 
 Pipeline strengths:
 * all parameters passed at the beginning of the program, requiring minimal to no user input 

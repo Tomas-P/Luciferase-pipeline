@@ -77,6 +77,13 @@ def ask_user_input():
     bheight_label = tk.Label(root,text="height of background")
     bheight_slider = tk.Scale(root,from_=0,to=1000,variable=bheight,orient=tk.HORIZONTAL)
     
+    # ask the user if custom rois are to be used, and if so, which:
+    use_custom_roi = tk.BooleanVar()
+    custom_roi = tk.StringVar()
+    custom_roi_check = tk.Checkbutton(root,variable=use_custom_roi,text="Use custom ROIS")
+    custom_roi_entry = tk.Entry(root,textvariable=custom_roi)
+    custom_roi_button = tk.Button(root,text="Choose ROIs",command=lambda:custom_roi.set(fd.askopenfilename(title="Choose your ROI archive")))
+    
     # Arrange all elements on the window
     folder_label.grid(row=0,column=0)
     folder_button.grid(row=0,column=1)
@@ -105,7 +112,10 @@ def ask_user_input():
     bheight_label.grid(row=11,column=0)
     bheight_slider.grid(row=11,column=1)
     
-    finish.grid(row=12)
+    custom_roi_check.grid(row=12,column=0)
+    custom_roi_entry.grid(row=12,column=1)
+    custom_roi_button.grid(row=12,column=2)
+    finish.grid(row=13)
     
     # run the UI
     root.mainloop()
@@ -129,6 +139,8 @@ def ask_user_input():
            }
     options["rheight"] = roi_height
     options["rwidth"] = roi_width
+    options["use custom roi"] = use_custom_roi.get()
+    options["custom roi"] = custom_roi.get()
     
     
     return options

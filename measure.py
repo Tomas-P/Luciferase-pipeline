@@ -17,7 +17,10 @@ def open_roi_archive():
     optfile = open(folder() + "/config/options.json")
     options = json.load(optfile)
     optfile.close()
-    filename = folder() + "/artifacts/RoiSet.zip"
+    if not options["use custom roi"]:
+        filename = folder() + "/artifacts/RoiSet.zip"
+    else:
+        filename = options["custom roi"]
     rm.runCommand("Open", filename)
     rois = rm.getRoisAsArray()
     rm.close()

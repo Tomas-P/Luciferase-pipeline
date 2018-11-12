@@ -26,16 +26,18 @@ def measure_background():
     return sub.Popen([CONSTANTS.IMAGEJ,"-port2", "--run", path.abspath("background.py")],stdout=sub.PIPE)
 
 
-def setup():
+def setup(custom_roi=False):
     fp = filterprocess()
-    sp = segmentprocess()
+    if not custom_roi:
+        sp = segmentprocess()
     line = fp.stdout.readline().decode()
     while not line.startswith("Filtering complete, stack saved"):
         line = fp.stdout.readline().decode()
     fp.terminate()
     print("Filtering Process Complete")
-    print(sp.stdout.readline().decode())
-    sp.terminate()
+    if not custom_roi:
+        print(sp.stdout.readline().decode())
+        sp.terminate()
             
 
 
@@ -59,11 +61,11 @@ def grid():
     return analysis.grid_from_data(analysis.get_data())
 
 def main():
-    options.options() # make sure options are set
+    opts = options.options() # make sure options are set
     pyplot.xlabel("Time")
     pyplot.ylabel("Intensity")
     pyplot.title("Plant group average intensity over time")
-    setup()
+    setup(opts["use custom roi"])
     measurement()
     analysis.graph_all_group_averages()
     pyplot.legend()

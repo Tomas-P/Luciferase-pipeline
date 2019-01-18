@@ -6,20 +6,36 @@ import jnius_config
 import tkinter as tk
 from tkinter import filedialog as fd
 from matplotlib import pyplot
+import sys
+import struct
 
-# remember to change these
-# strings to match the system
-# and ImageJ installation
-# when installing the program
-IMAGEJFOLDER = '/home/tomas/Fiji.app/'
-IMAGEJ = IMAGEJFOLDER + "ImageJ-linux64"
+god = tk.Tk()
+imagej_folder = fd.askdirectory(title="Please select your Fiji folder") + "/"
 
-# Need to ImageJ's java home for its class library
-os.environ['JAVA_HOME'] = sub.run([IMAGEJ,"--print-java-home"],
+if sys.platform == 'linux' and struct.calcsize("P") * 8 == 64:
+    imagej_executable = imagej_folder + "ImageJ-linux64"
+
+elif sys.platform == 'linux' and struct.calcsize("P") * 8 == 32:
+    imagej_executable = imagej_folder + "ImageJ-linux32"
+
+elif sys.platform == 'win32' and struct.calcsize("P") * 8 == 64:
+    imagej_executable = imagej_folder + "ImageJ-win64.exe"
+
+elif sys.platform == "win32" and struct.calsize("P") * 8 == 32:
+    imagej_executable = imagej_folder + "ImageJ-win32.exe"
+
+elif sys.platform == 'darwin':
+    imagej_executable = imagej_folder + "Contents/MacOS/ImageJ-macosx"
+    
+else:
+    raise RuntimeError("Unsupported System")
+
+# Need to get ImageJ's java home for its class library
+os.environ['JAVA_HOME'] = sub.run([imagej_executable,"--print-java-home"],
                                   stdout=sub.PIPE).stdout.decode().strip()
 
 # Find ALL of the jar files within imagej to have access to all included classes
-jnius_config.add_classpath(*glob.glob(IMAGEJFOLDER+"**/*.jar",recursive=True))
+jnius_config.add_classpath(*glob.glob(imagej_folder+"**/*.jar",recursive=True))
 
 import jnius
 
@@ -279,8 +295,8 @@ class UserInterface:
 
         self.pause = False
 
-    def user_input(self):
-        root = tk.Tk()
+    def user_input(self, master):
+        root = tk.Toplevel(master)
         bx,by,b_width,b_height = tk.IntVar(),tk.IntVar(),tk.IntVar(),tk.IntVar()
         folder,mask = tk.StringVar(),tk.StringVar()
         r_width,r_height = tk.IntVar(),tk.IntVar()
@@ -291,8 +307,6 @@ class UserInterface:
         roi_file = tk.StringVar()
 
         group_file = tk.StringVar()
-
-        pause = tk.BooleanVar()
 
         group_entry = FileEntry(root, group_file, "File With groups as Rois")
 
@@ -315,9 +329,7 @@ class UserInterface:
         r_width_scale = LabeledScale(root, 200, 10, "ROI width", r_width)
         r_height_scale = LabeledScale(root, 200, 10, "ROI height", r_height)
 
-        done_button = tk.Button(root,text="Ready to go!",command=root.destroy)
-
-        pause_check = tk.Checkbutton(root,text="Pause?",variable=pause)
+        done_button = tk.Button(root,text="Ready to go!",command=master.destroy)
 
         root.title("Program Options")
 
@@ -341,6 +353,7 @@ class UserInterface:
         roi_label.grid(columnspan=3)
         r_width_scale.grid(columnspan=3)
         r_height_scale.grid(columnspan=3)
+        
 
         done_button.grid(columnspan=3)
 
@@ -363,7 +376,6 @@ class UserInterface:
         self.save_rois = save_roi.get()
         self.roi_file = roi_file.get()
         self.group_file = group_file.get()
-        self.pause = pause.get()
 
 def get_groups(filename):
     rm = RoiManager(False)
@@ -398,7 +410,7 @@ def affiliate(groups :list, rois :list) -> dict:
 
 if __name__ == '__main__':
     ui = UserInterface()
-    ui.user_input()
+    ui.user_input(god)
     mask = open_as_mask(ui.mask_image)
     stack = open_stack(ui.folder)
     processed = initial_filtering(stack, mask)

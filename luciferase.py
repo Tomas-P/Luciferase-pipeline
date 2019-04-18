@@ -1,4 +1,6 @@
 import glob
+
+
 import math
 import os
 import subprocess as sub
@@ -8,13 +10,15 @@ from tkinter import filedialog as fd
 from matplotlib import pyplot
 import sys
 import struct
-import numpy
+import pandas
 
 def get_imagej_folder():
     window = tk.Tk()
     folder = fd.askdirectory(
         master=window,
-        title="Please select your Fiji folder")
+        title="Please select your Fiji folder",
+        initialdir=os.environ['HOME'] + '/Fiji.app'
+        )
     window.destroy()
     return folder + "/"
 
@@ -182,11 +186,11 @@ def region(mask,bx,by,width,height):
         return is_top or is_bottom or is_left or is_right
 
     def adj_off(point):
-        a = not mask.getPixel(point.x - 1,point.y)[0]
-        b = not mask.getPixel(point.x + 1,point.y)[0]
-        c = not mask.getPixel(point.x, point.y - 1)[0]
-        d = not mask.getPixel(point.x, point.y + 1)[0]
-        return a or b or c or d
+        a = mask.getPixel(point.x - 1,point.y)[0]
+        b = mask.getPixel(point.x + 1,point.y)[0]
+        c = mask.getPixel(point.x, point.y - 1)[0]
+        d = mask.getPixel(point.x, point.y + 1)[0]
+        return not (a or b or c or d)
 
     bright = [b for b in bright if isborder(b) or adj_off(b)]
 
@@ -213,6 +217,8 @@ def region(mask,bx,by,width,height):
             return 0
         else:
             raise Exception("This should be impossible")
+    
+    bright.sort(key=angle)
 
     xvals = [point.x for point in bright]
     yvals = [point.y for point in bright]
@@ -272,6 +278,7 @@ class FileEntry(tk.Frame):
         tk.Frame.__init__(self, master)
         self.label = tk.Label(self, text=text)
         self.entry = tk.Entry(self, textvariable=var)
+    
         if folder:
             self.button = tk.Button(self,
                                     text=text,
@@ -322,6 +329,7 @@ class UserInterface:
         self.group_file = ''
 
         self.pause = False
+
 
     def user_input(self, master):
         root = tk.Toplevel(master)
@@ -495,6 +503,16 @@ if __name__ == '__main__':
     pyplot.ylabel("Brightness")
     pyplot.show()
 
+    try:
+        os.mkdir("output")
+    except FileExistsError:
+        pass
+    
+    for gkey, gvalues in measurements.items():
+        frame = pandas.DataFrame(gvalues)
+        frame = frame.T
+        frame.to_excel("output/group_{}.xlsx".format(gkey),index=False,header=False)
+
     for groupkey in measurements:
         group = measurements[groupkey]
         pyplot.plot(group.values())
@@ -502,10 +520,3 @@ if __name__ == '__main__':
         pyplot.xlabel("Time")
         pyplot.ylabel("Brightness")
         pyplot.show()
-
-
-    # Assuming the user has at least one experimental group
-    data = numpy.ndarray((len(measurements)+1,len(measurements[0])),dtype=list)
-    for group in measurements:
-        for time in measurements[0]:
-            data[group][time] = measurements[group][time]

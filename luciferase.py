@@ -22,27 +22,9 @@ def get_imagej_folder():
     window.destroy()
     return folder + "/"
 
-def name_executable(folder):
-    if sys.platform == 'linux' and struct.calcsize("P") * 8 == 64:
-        return folder + "ImageJ-linux64"
-    elif sys.platform == 'linux' and struct.calcsize("P") * 8 == 32:
-        return folder + "ImageJ-linux32"
-    elif sys.platform == "win32" and struct.calcsize("P") * 8 == 64:
-        return folder + "ImageJ-win64.exe"
-    elif sys.platform == "win32" and struct.calcsize("P") * 8 == 32:
-        return folder + "ImageJ-win32.exe"
-    elif sys.platform == "darwin":
-        return folder + "Contents/MacOS/ImageJ-macosx"
-    else:
-        raise RuntimeError("""The executable name for this system is unknown.
-Modify the name_executable function to fix it, and please submit to the repo.""")
-
-
 imagej_folder = get_imagej_folder()
-imagej_executable = name_executable(imagej_folder)
 # Need to get ImageJ's java home for its class library
-os.environ['JAVA_HOME'] = sub.run([imagej_executable,"--print-java-home"],
-                                  stdout=sub.PIPE).stdout.decode().strip()
+os.environ['JAVA_HOME'] = glob.glob(imagej_folder + '/**/jdk*/',recursive=True)[0]
 # Find ALL of the jar files within imagej to have access to all included classes
 jnius_config.add_classpath(*glob.glob(imagej_folder+"**/*.jar",recursive=True))
 

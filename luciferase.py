@@ -493,6 +493,7 @@ if __name__ == '__main__':
         g_avgs = [sum(group[i]) / len(group[i]) for i in range(len(group))]
         if groupkey != -1:
             pyplot.plot(g_avgs,label="Group {}".format(groupkey))
+            
         else:
             pyplot.plot(g_avgs,label="Unclassified")
 

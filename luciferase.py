@@ -305,7 +305,39 @@ class UserInterface:
 
         self.group_file = ''
 
-        self.pause = False
+    def save(self, filename):
+
+        with open(filename, 'a') as handle:
+            textlines = ("Image Folder",
+                         str(self.folder),
+                         "Mask Image",
+                         str(self.mask_image),
+                         "ROI Width",
+                         str(self.roi_width),
+                         "ROI Height",
+                         str(self.roi_height),
+                         "Background Bx",
+                         str(self.background_bx),
+                         "Background By",
+                         str(self.background_by),
+                         "Background Width",
+                         str(self.background_width),
+                         "Background Height",
+                         str(self.background_height),
+                         "Custom ROI",
+                         self.custom_roi,
+                         "Use Custom ROI",
+                         str(self.use_custom_roi),
+                         "Save ROIs",
+                         str(self.save_rois),
+                         "ROI File",
+                         str(self.roi_file),
+                         "Group File",
+                         str(self.group_file)
+                         )
+            for line in textlines:
+                handle.write(line + '\n')
+
 
 
     def user_input(self, master):
@@ -425,6 +457,7 @@ if __name__ == '__main__':
     god = tk.Tk()
     ui = UserInterface()
     ui.user_input(god)
+    ui.save("parameters.txt")
     mask = open_as_mask(ui.mask_image)
     stack = open_stack(ui.folder)
     processed = initial_filtering(stack, mask)

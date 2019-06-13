@@ -1,0 +1,435 @@
+Folder
+/home/tomas/Documents/Colleen/Images/2018-09-06_time_course/Pos0
+Mask
+/home/tomas/Documents/Colleen/Images/2018-09-06_time_course/Pos0/img_000000000_Default_000.tif
+bg_bx
+0
+
+            bg_by
+0
+bg width
+200
+bg_height
+200
+
+            existing roi
+
+save roi name
+            
+/home/tomas/Documents/Colleen/NewRois.zip
+group file
+/home/tomas/Documents/Colleen/results_2018_09_06/GroupSet.zip
+roi width
+40
+
+            roi height
+40
+
+
+
+Folder
+/home/tomas/Documents/Colleen/Images/2018-09-06_time_course/Pos0
+Mask
+/home/tomas/Documents/Colleen/Images/2018-09-06_time_course/Pos0/img_000000000_Default_000.tif
+bg_bx
+0
+
+            bg_by
+0
+bg width
+200
+bg_height
+200
+
+            existing roi
+
+save roi name
+            
+/home/tomas/Documents/Colleen/NewRois.zip
+group file
+/home/tomas/Documents/Colleen/results_2018_09_06/GroupSet.zip
+roi width
+38
+
+            roi height
+38
+
+
+
+Folder
+/home/tomas/Documents/Colleen/Images/2018-09-06_time_course/Pos0
+Mask
+/home/tomas/Documents/Colleen/Images/2018-09-06_time_course/Pos0/img_000000000_Default_000.tif
+bg_bx
+0
+
+            bg_by
+0
+bg width
+200
+bg_height
+200
+
+            existing roi
+
+save roi name
+            
+/home/tomas/Documents/Colleen/NewRois.zip
+group file
+/home/tomas/Documents/Colleen/results_2018_09_06/GroupSet.zip
+roi width
+42
+
+            roi height
+42
+
+
+
+Folder
+/home/tomas/Documents/Colleen/Images/2018-09-06_time_course/Pos0
+Mask
+/home/tomas/Documents/Colleen/Images/2018-09-06_time_course/Pos0/img_000000000_Default_000.tif
+bg_bx
+0
+
+            bg_by
+0
+bg width
+200
+bg_height
+200
+
+            existing roi
+
+save roi name
+            
+/home/tomas/Documents/Colleen/NewRois.zip
+group file
+/home/tomas/Documents/Colleen/results_2018_09_06/GroupSet.zip
+roi width
+45
+
+            roi height
+45
+
+
+
+Folder
+/home/tomas/Documents/Colleen/Images/2018-09-06_time_course/Pos0
+Mask
+/home/tomas/Documents/Colleen/Images/2018-09-06_time_course/Pos0/img_000000000_Default_000.tif
+bg_bx
+0
+
+            bg_by
+0
+bg width
+200
+bg_height
+200
+
+            existing roi
+
+save roi name
+            
+NewRois.zip
+group file
+/home/tomas/Documents/Colleen/results_2018_09_06/GroupSet.zip
+roi width
+43
+
+            roi height
+43
+
+
+
+Folder
+/home/tomas/Documents/Colleen/Images/2018-09-06_time_course/Pos0
+Mask
+/home/tomas/Documents/Colleen/Images/2018-09-06_time_course/Pos0/img_000000000_Default_000.tif
+bg_bx
+1
+
+            bg_by
+1
+bg width
+200
+bg_height
+200
+
+            existing roi
+
+save roi name
+            
+/home/tomas/Documents/Colleen/NewRois.zip
+group file
+/home/tomas/Documents/Colleen/results_2018_09_06/GroupSet.zip
+roi width
+45
+
+            roi height
+45
+
+
+
+Folder
+/home/tomas/Documents/Colleen/Images/2018-09-06_time_course/Pos0
+Mask
+/home/tomas/Documents/Colleen/Images/2018-09-06_time_course/Pos0/img_000000000_Default_000.tif
+bg_bx
+0
+
+            bg_by
+0
+bg width
+200
+bg_height
+200
+
+            existing roi
+
+save roi name
+            
+/home/tomas/Documents/Colleen/NewRois.zip
+group file
+/home/tomas/Documents/Colleen/results_2018_09_06/GroupSet.zip
+roi width
+10
+
+            roi height
+10
+
+
+
+Folder
+/home/tomas/Documents/Colleen/Images/2018-09-06_time_course/Pos0
+Mask
+/home/tomas/Documents/Colleen/Images/2018-09-06_time_course/Pos0/img_000000000_Default_000.tif
+bg_bx
+0
+
+            bg_by
+0
+bg width
+200
+bg_height
+200
+
+            existing roi
+
+save roi name
+            
+
+group file
+/home/tomas/Documents/Colleen/results_2018_09_06/GroupSet.zip
+roi width
+45
+
+            roi height
+45
+
+
+
+Folder
+/home/tomas/Documents/Colleen/Images/2018-09-06_time_course/Pos0
+Mask
+/home/tomas/Documents/Colleen/Images/2018-09-06_time_course/Pos0/img_000000000_Default_000.tif
+bg_bx
+0
+
+            bg_by
+0
+bg width
+200
+bg_height
+200
+
+            existing roi
+
+save roi name
+            
+
+group file
+/home/tomas/Documents/Colleen/results_2018_09_06/GroupSet.zip
+roi width
+10
+
+            roi height
+10
+
+
+
+Folder
+/home/tomas/Documents/Colleen/Images/2018-09-06_time_course/Pos0
+Mask
+/home/tomas/Documents/Colleen/Images/2018-09-06_time_course/Pos0/img_000000000_Default_000.tif
+bg_bx
+0
+
+            bg_by
+0
+bg width
+200
+bg_height
+200
+
+            existing roi
+
+save roi name
+            
+/home/tomas/Documents/Colleen/NewRois.zip
+group file
+/home/tomas/Documents/Colleen/results_2018_09_06/GroupSet.zip
+roi width
+46
+
+            roi height
+46
+
+
+
+Folder
+/home/tomas/Documents/Colleen/Images/2018-09-06_time_course/Pos0
+Mask
+/home/tomas/Documents/Colleen/Images/2018-09-06_time_course/Pos0/img_000000000_Default_000.tif
+bg_bx
+0
+
+            bg_by
+0
+bg width
+200
+bg_height
+200
+
+            existing roi
+
+save roi name
+            
+/home/tomas/Documents/Colleen/NewRois.zip
+group file
+/home/tomas/Documents/Colleen/results_2018_09_06/GroupSet.zip
+roi width
+10
+
+            roi height
+10
+
+
+
+Folder
+/home/tomas/Documents/Colleen/Images/2018-09-06_time_course/Pos0
+Mask
+/home/tomas/Documents/Colleen/Images/2018-09-06_time_course/Pos0/img_000000000_Default_000.tif
+bg_bx
+0
+
+            bg_by
+0
+bg width
+200
+bg_height
+200
+
+            existing roi
+
+save roi name
+            
+/home/tomas/Documents/Colleen/NewRois.zip
+group file
+/home/tomas/Documents/Colleen/results_2018_09_06/GroupSet.zip
+roi width
+44
+
+            roi height
+44
+
+
+
+Folder
+/home/tomas/Documents/Colleen/Images/2018-09-06_time_course/Pos0
+Mask
+/home/tomas/Documents/Colleen/Images/2018-09-06_time_course/Pos0/img_000000000_Default_000.tif
+bg_bx
+0
+
+            bg_by
+0
+bg width
+200
+bg_height
+200
+
+            existing roi
+/home/tomas/Documents/Colleen/NewRois.zip
+save roi name
+            
+
+group file
+/home/tomas/Documents/Colleen/results_2018_09_06/GroupSet.zip
+roi width
+10
+
+            roi height
+10
+
+
+
+Folder
+/home/tomas/Documents/Colleen/Images/2018-09-06_time_course/Pos0
+Mask
+/home/tomas/Documents/Colleen/Images/2018-09-06_time_course/Pos0/img_000000000_Default_000.tif
+bg_bx
+0
+
+            bg_by
+0
+bg width
+200
+bg_height
+200
+
+            existing roi
+
+save roi name
+            
+/home/tomas/Documents/Colleen/NewestRois.zip
+group file
+/home/tomas/Documents/Colleen/results_2018_09_06/GroupSet.zip
+roi width
+100
+
+            roi height
+90
+
+
+
+Folder
+/home/tomas/Documents/Colleen/Images/2018-09-06_time_course/Pos0
+Mask
+/home/tomas/Documents/Colleen/Images/2018-09-06_time_course/Pos0/img_000000000_Default_000.tif
+bg_bx
+0
+
+            bg_by
+0
+bg width
+200
+bg_height
+200
+
+            existing roi
+/home/tomas/Documents/Colleen/NewRois.zip
+save roi name
+            
+
+group file
+/home/tomas/Documents/Colleen/results_2018_09_06/GroupSet.zip
+roi width
+10
+
+            roi height
+10
+
+
+

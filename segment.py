@@ -1,31 +1,68 @@
-from luciferase import open_image, make_mask, IJ, RoiManager
+from luciferase import open_image, ijrun, String, Macro, RATS_, WindowManager, IJ, RoiManager
 from tkinter.filedialog import askopenfilename
-from tkinter import Tk
 
-def get_fname():
-    base = Tk()
-    fname = askopenfilename(master=base,title="What image?")
-    base.destroy()
-    return fname
+def make_mask(image):
+    ijrun(image, "Enhance Contrast...", "saturated=0.3 equalize")
+    ijrun(image, "Median...", "radius=2")
+    ijrun(image, "Subtract Background...", "rolling=50")
+    arg = String("noise=25 lambda=3 min=410")
+    Macro.setOptions(arg)
+    rat = RATS_()
+    rat.setup(arg, image)
+    proc = image.getProcessor()
+    rat.run(proc)
+    mask = WindowManager.getCurrentImage()
+    mask.show()
+    ijrun(mask, "Minimum...", "radius=2")
+    return mask
 
-def wand_all_pixels(mask):
-    width = mask.getWidth()
-    height = mask.getHeight()
-    for x in range(width):
-        for y in range(height):
+def skeletonize(mask):
+    ijrun(mask, "Skeletonize", "")
+
+def get_brights(mask):
+    pixels = []
+    for x in range(mask.width):
+        for y in range(mask.height):
             if mask.getPixel(x,y)[0]:
-                IJ.doWand(mask,x,y,0,"Legacy")
-                roi = mask.getRoi()
-                yield roi
+                pixels.append((x,y))
 
+    return pixels
+
+def close(imp):
+    imp.changes = False
+    imp.close()
+
+def wand_all(image, points):
+    rois = []
+    for x,y in points:
+        IJ.doWand(image, x, y, 0, "4-connected")
+        r = image.getRoi()
+        if not any(map(lambda roi : roi.equals(r), rois)):
+            rois.append(r)
+    return rois
 
 if __name__ == '__main__':
-    image_name = get_fname()
-    image = open_image(image_name)
+
+    image = open_image(askopenfilename())
+    image.show()
     mask = make_mask(image)
-    mask.changes = False
-    wand_gen = wand_all_pixels(mask)
-    rois = []
-    for roi in wand_gen:
-        if not any(map(lambda r : r.equals(roi), rois)):
-            rois.append(roi)
+    mask.show()
+    skeletonize(mask)
+    brights = get_brights(mask)
+    close(mask)
+    close(image)
+    del mask
+    del image
+    image = open_image("/home/tomas/Documents/Colleen/Images/2018-09-06_time_course/Pos0/img_000000000_Default_000.tif")
+    image.show()
+    mask = make_mask(image)
+    image.hide()
+    wanded = wand_all(mask, brights)
+    mask.hide()
+
+    rm = RoiManager()
+    for roi in wanded:
+        rm.addRoi(roi)
+
+    rm.runCommand(String("Save"), String(input("where to save? ")))
+    rm.close()

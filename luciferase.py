@@ -7,6 +7,7 @@ from tkinter import filedialog as fd
 from matplotlib import pyplot
 import pandas
 
+
 def get_imagej_folder():
     window = tk.Tk()
     folder = fd.askdirectory(
@@ -100,7 +101,6 @@ def align(stack):
 def ijrun(image,arg1,arg2):
     IJ.run(image,String(arg1),String(arg2))
 
-
 def make_mask(image):
     arg = String("noise=25 lambda=3 min=410")
     ijrun(image,"Enhance Contrast...","saturated=0.3 equalize")
@@ -118,6 +118,27 @@ def make_mask(image):
     ijrun(mask,"16-bit","")
     ijrun(mask,"Multiply...","value=257")
     return mask
+
+def make_skeleton(image):
+    ijrun(image, "Enhance Contrast...", "saturated=0.3 equalize")
+    ijrun(image, "Median...", "radius=2")
+    ijrun(image, "Subtract Background...", "rolling=50")
+    arg = String("noise=25 lambda=3 min=410")
+    Macro.setOptions(arg)
+    rat = RATS_()
+    rat.setup(arg, image)
+    proc = image.getProcessor()
+    rat.run(proc)
+    mask = WindowManager.getCurrentImage()
+    mask.show()
+    image.changes = False
+    image.close()
+    ijrun(mask,"Minimum...","radius=2")
+    ijrun(mask,"Skeletonize","")
+    ijrun(mask,"16-bit","")
+    ijrun(mask,"Multiply...","value=257")
+    return mask
+
 
 def apply_mask(stack,mask):
     ic = ImageCalculator()
@@ -145,31 +166,76 @@ def initial_filtering(stack, mask):
     aligned.close()
     return filtered
 
-def wand_pixels(mask):
-    width = mask.getWidth()
-    height = mask.getHeight()
-    for x in range(width):
-        for y in range(height):
-            if mask.getPixel(x,y)[0]:
-                IJ.doWand(mask,x,y,0,"Legacy")
-                roi = mask.getRoi()
-                yield roi
+def region(mask,bx,by,width,height):
+    mask.setRoi(bx,by,width,height)
+    roi = mask.getRoi()
+    points = roi.getContainedPoints()
+    bright = [p for p in points if mask.getPixel(p.x,p.y)[0]]
+    if not bright:
+        return None
+    if len(bright) == len(points):
+        return Roi(bx,by,width,height)
+    
+    def isborder(point):
+        is_top = abs(point.y - by) <= 1
+        is_bottom = abs(point.y - (by + height)) <= 1
+        is_left = abs(point.x - bx) <= 1
+        is_right = abs(point.x - (bx + width)) <= 1
+        return is_top or is_bottom or is_left or is_right
 
-def make_rois(mask, save=''):
-    rois = []
-    wand_gen = wand_pixels(mask)
-    for roi in wand_gen:
-        if not any(map(lambda r : r.equals(roi), rois)):
-            rois.append(roi)
+    def adj_off(point):
+        a = mask.getPixel(point.x - 1,point.y)[0]
+        b = mask.getPixel(point.x + 1,point.y)[0]
+        c = mask.getPixel(point.x, point.y - 1)[0]
+        d = mask.getPixel(point.x, point.y + 1)[0]
+        return not (a or b or c or d)
 
-    if save:
-        rm = RoiManager(False)
-        for r in rois:
-            rm.addRoi(r)
-        rm.runCommand(String("Save"), String(save))
-        rm.close()
+    bright = [b for b in bright if isborder(b) or adj_off(b)]
 
+    if not bright:
+        return None
+
+    x_avg = int(sum(b.x for b in bright) / len(bright))
+    y_avg = int(sum(b.y for b in bright) / len(bright))
+
+    def angle(point):
+        x = point.x - x_avg
+        y = point.y - y_avg
+        if x == 0 and y > 0:
+            return math.pi / 2
+        elif x == 0 and y < 0:
+            return 3 * math.pi / 2
+        elif x > 0 and y >= 0:
+            return math.atan(y / x)
+        elif x > 0 and y < 0:
+            return math.atan(y / x) + 2 * math.pi
+        elif x < 0:
+            return math.atan(y / x) + math.pi
+        elif x==0 and y==0:
+            return 0
+        else:
+            raise Exception("This should be impossible")
+    
+    bright.sort(key=angle)
+
+    xvals = [point.x for point in bright]
+    yvals = [point.y for point in bright]
+    polygon = PolygonRoi(xvals,yvals,len(bright),Roi.POLYGON)
+    return polygon
+    
+def locate_plants(mask, plant_width, plant_height, fname=''):
+    rm = RoiManager(False)
+    for x in range(0,mask.getWidth(),plant_width):
+        for y in range(0,mask.getHeight(),plant_height):
+            poly = region(mask,x,y,plant_width,plant_height)
+            if poly and poly.statistics.area > 100:
+                rm.addRoi(poly)
+    if fname:
+        rm.runCommand(String("Save"), String(fname))
+    rois = rm.getRoisAsArray()
+    rm.close()
     return rois
+
 
 class LabeledScale(tk.Frame):
 
@@ -245,6 +311,9 @@ class UserInterface:
         self.folder = ''
         self.mask_image = ''
         
+        self.roi_width = 0
+        self.roi_height = 0
+        
         self.background_bx = 0
         self.background_by = 0
         self.background_width = 0
@@ -265,6 +334,10 @@ class UserInterface:
                          str(self.folder),
                          "Mask Image",
                          str(self.mask_image),
+                         "ROI Width",
+                         str(self.roi_width),
+                         "ROI Height",
+                         str(self.roi_height),
                          "Background Bx",
                          str(self.background_bx),
                          "Background By",
@@ -287,12 +360,15 @@ class UserInterface:
             for line in textlines:
                 handle.write(line + '\n')
 
+            handle.write('\n\n')
+
 
 
     def user_input(self, master):
         root = tk.Toplevel(master)
         bx,by,b_width,b_height = tk.IntVar(),tk.IntVar(),tk.IntVar(),tk.IntVar()
         folder,mask = tk.StringVar(),tk.StringVar()
+        r_width,r_height = tk.IntVar(),tk.IntVar()
         custom_roi = tk.StringVar()
         use_custom_roi = tk.BooleanVar()
 
@@ -318,6 +394,10 @@ class UserInterface:
         b_width_scale = LabeledScale(root, 200, 1, "width", b_width)
         b_height_scale = LabeledScale(root, 200, 1, "height", b_height)
 
+        roi_label = tk.Label(root, text="Region of interest size parameters")
+        r_width_scale = LabeledScale(root, 200, 10, "ROI width", r_width)
+        r_height_scale = LabeledScale(root, 200, 10, "ROI height", r_height)
+
         done_button = tk.Button(root,text="Ready to go!",command=master.destroy)
 
         root.title("Program Options")
@@ -338,6 +418,11 @@ class UserInterface:
         by_scale.grid(row=7,column=0)
         b_width_scale.grid(row=8,column=0)
         b_height_scale.grid(row=9,column=0)
+
+        roi_label.grid(row=5,column=1)
+        r_width_scale.grid(row=6,column=1)
+        r_height_scale.grid(row=7,column=1)
+        
 
         done_button.grid(columnspan=3)
 
@@ -392,7 +477,7 @@ def affiliate(groups :list, rois :list) -> dict:
     return areas
 
 
-if __name__ == '__main__':
+if __name__ == '__main__' and False:
     god = tk.Tk()
     ui = UserInterface()
     ui.user_input(god)
@@ -405,14 +490,21 @@ if __name__ == '__main__':
         get_rois = get_groups
         rois = get_rois(ui.custom_roi)
     elif ui.save_rois:
-        rois = make_rois(mask, ui.roi_file)
+        rois = locate_plants(mask, ui.roi_width, ui.roi_height,ui.roi_file)
     else:
-        rois = make_rois(mask)
+        m2 = mask.duplicate()
+        m2.show()
+        ijrun(m2, "8-bit", "")
+        Segment.skeletonize(m2)
+        _points = Segment.get_brights(m2)
+        m2.changes = False
+        m2.close()
+        mask.show()
+        rois = Segment.wand_all(mask,_points)
+        rois = list(filter(lambda r : r and r.statistics.area > 100, rois))
     groups = get_groups(ui.group_file)
-
     # each of the areas is an experimental group as defined in the group file
     areas = affiliate(groups, rois)
-
     # the nature of the measurements dict should be explained
     # the outer layer is a dictionary with the key being the experimental
     # group, and the value being a dictionary where the key is the point in

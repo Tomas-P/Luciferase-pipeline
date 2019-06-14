@@ -207,3 +207,15 @@ class UserInterface(tk.Frame):
     def normalize(self):
 
         return self.__normalize.get()
+
+    def save(self, filename):
+
+        with open(filename, 'a') as params:
+
+            params.write("\n\n\n")
+            params.write("folder " + self.image_folder + '\n')
+            params.write("mask " + self.mask + '\n')
+            params.write("roi " + str(self.roi_settings) + "\n")
+            params.write("background " + str(self.background_bounds) + "\n")
+            params.write("normalize " + str(self.normalize) + "\n")
+

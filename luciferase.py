@@ -343,26 +343,6 @@ Does not modify or consume the input image."""
 
 if __name__ == '__main__':
 
-##    stack = open_stack("/home/tomas/Documents/Colleen/Images/2018-09-06_time_course/Pos0")
-##
-##    img = open_image("/home/tomas/Documents/Colleen/Images/2018-09-06_time_course/Pos0/img_000000000_Default_000.tif")
-##
-##    rois = generate_rois(img)
-##
-##    groups = open_archive("/home/tomas/Documents/Colleen/results_2018_09_06/GroupSet.zip")
-##
-##    improve(stack, True)
-##
-##    stack = align(stack)
-##
-##    WM.getWindow(String("Log")).hide()
-##
-##    measurements = measure_rois(stack, rois)
-##
-##    close(stack)
-##
-##    groupings = affiliate(groups, measurements.keys())
-##
     base = tk.Tk()
 
     interface = ui.UserInterface(base)
@@ -370,6 +350,8 @@ if __name__ == '__main__':
     interface.pack()
 
     base.mainloop()
+
+    interface.save("parameters.txt")
 
     stack = open_stack(interface.image_folder)
 

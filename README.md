@@ -1,10 +1,40 @@
 # Luciferase-pipeline
-A repository to store my work on an automated pipeline for analyzing luciferase imaging data using Python and ImageJ
 
-The pipeline processes, measures, and graphs data from luciferase images with minimal user input,
-while maintaining the option to manually edit or define regions of interest and region of interest groups.
+An automated pipeline for analyzing luciferase imaging data using Python and ImageJ.
 
-Pipeline strengths:
-* all parameters passed at the beginning of the program, requiring minimal to no user input 
-* Accurately, precicely, and reproducably produces graphs
+## Features
+* Automatic generation of regions of interest
+* User defined experimental groups
+* Option to use custom regions of interest
+* Option to normalize data set against max value by roi
+* Simple GUI
+* Saves input parameters for future reference
+* Outputs measurements by experimental group in csv file
+* Outputs graph of each experimental group
+* Outputs graph of each group's average values
+* Independent of ImageJ's position in filesystem
+* Independent of dataset's positions in filesystem
 * Fast
+* Reproducible results
+
+## Dependencies
+* numpy
+* pandas
+* matplotlib
+* PyJnius
+* Python 3.5
+    * Should I list the python standard library or the modules used?
+* Fiji(Fiji Is Just ImageJ)
+
+## Installation
+1. Install Python 3.5 or later from https://www.python.org/
+    * Make sure to include pip in your install
+2. Install Fiji from http://fiji.sc/
+3. Follow the PyJnius install instructions for your OS at https://pyjnius.readthedocs.io/en/stable/installation.html
+4. Use pip to install numpy, pandas, and matplotlib
+5. Download both ui.py and luciferase.py from this repository
+6. Save both files in the same folder on your computer
+
+## Running
+Run the luciferase.py script under Python 3.5 or later.
+

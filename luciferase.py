@@ -88,8 +88,12 @@ def enhance_contrast(image :ImagePlus, stack:bool=False):
     """Increases the contrast of an image.
 The image is modified in place."""
     if stack:
-        ijrun(image,"Enhance Contrast...","saturated=0.3 equalize process_all")
+        # because plants are identified in the s
+        ijrun(image,"Enhance Contrast...","saturated=0.3 process_all")
     else:
+        # In the segmentation process, we only care about the locations
+        # of plants, not their value, so equalizing to increase the
+        # visiblity of weak plants is appropriate
         ijrun(image,"Enhance Contrast...","saturated=0.3 equalize")
 
 def median(image :ImagePlus, stack:bool=False):
@@ -377,9 +381,11 @@ if __name__ == '__main__':
 
     improve(stack, True)
 
-    stack = align(stack)
+    if interface.align:
 
-    WM.getWindow(String("Log")).hide()
+        stack = align(stack)
+
+        WM.getWindow(String("Log")).hide()
 
     measurements = measure_rois(stack, rois)
 

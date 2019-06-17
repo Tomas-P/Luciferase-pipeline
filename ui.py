@@ -175,11 +175,15 @@ class UserInterface(tk.Frame):
         self.__folder = FileEntry(self, "folder with data images", True)
         self.__mask = FileEntry(self, "segmentation image")
         self.__but = tk.Button(self, text="Ready", command=master.destroy)
+        self.__align = Optional(self, "align using SIFT")
+        self.__align.var.set(True)
+                                
 
         self.__folder.grid(row=0)
         self.__mask.grid(row=1)
-        self.__normalize.grid(row=2)
-        self.__background.grid(row=3)
+        self.__normalize.grid(row=2,column=0)
+        self.__align.grid(row=2,column=1)
+        self.__background.grid(row=3,column=0)
         self.__rois.grid(row=4)
         self.__but.grid(row=5)
 
@@ -207,6 +211,11 @@ class UserInterface(tk.Frame):
     def normalize(self):
 
         return self.__normalize.get()
+
+    @property
+    def align(self):
+
+        return self.__align.get()
 
     def save(self, filename):
 

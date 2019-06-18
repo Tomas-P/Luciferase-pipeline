@@ -227,4 +227,5 @@ class UserInterface(tk.Frame):
             params.write("roi " + str(self.roi_settings) + "\n")
             params.write("background " + str(self.background_bounds) + "\n")
             params.write("normalize " + str(self.normalize) + "\n")
+            params.write("align " + str(self.align) + "\n")
 

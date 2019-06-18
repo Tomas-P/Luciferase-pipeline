@@ -9,6 +9,8 @@ import numpy
 import jnius_config as jconf
 import ui
 
+
+
 def get_imagej_folder() -> str:
     window = tk.Tk()
     folder = fd.askdirectory(
@@ -345,7 +347,7 @@ Does not modify or consume the input image."""
         
         
 
-if __name__ == '__main__':
+def main():
 
     base = tk.Tk()
 
@@ -428,6 +430,19 @@ if __name__ == '__main__':
     except FileExistsError:
 
         pass
+
+    ofiles = glob.glob("output/*")
+    gfiles = glob.glob("graphs/*")
+
+    if len(ofiles) > 0:
+
+        for of in ofiles:
+            os.remove(of)
+
+    if len(gfiles) > 0:
+            
+        for gf in gfiles:
+            os.remove(gf)
     
     for group in data:
 
@@ -460,12 +475,16 @@ if __name__ == '__main__':
 
         pyplot.plot(data[group])
 
-        pyplot.title("Group {}".format(group))
+        pyplot.title("Group {}".format(group) if group >= 0 else "Unclassified")
 
         pyplot.xlabel("Time or Slice Position")
 
         pyplot.ylabel("Normalized Intensity" if interface.normalize else "Intensity")
 
-        pyplot.savefig("graphs/group{}.png".format(group))
+        pyplot.savefig("graphs/group{}.png".format(group) if group >= 0 else "graphs/unclassified.png")
 
         pyplot.show()
+
+if __name__ == '__main__':
+
+    main()

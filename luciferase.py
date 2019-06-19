@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import glob
 import math
 import os
@@ -463,6 +465,8 @@ def main():
 
     pyplot.title(title)
 
+    pyplot.xticks(numpy.arange(0, data[0].shape[0] + 12, 12))
+
     pyplot.xlabel("Time or Slice Position")
 
     pyplot.ylabel("Normalized Intensity" if interface.normalize else "Intensity")
@@ -474,6 +478,8 @@ def main():
     for group in data:
 
         pyplot.plot(data[group])
+
+        pyplot.xticks(numpy.arange(0, data[group].shape[0] + 12, 12))
 
         pyplot.title("Group {}".format(group) if group >= 0 else "Unclassified")
 

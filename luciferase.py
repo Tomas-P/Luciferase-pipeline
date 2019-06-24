@@ -5,7 +5,6 @@ import math
 import os
 import tkinter as tk
 from tkinter import filedialog as fd
-import pandas
 from matplotlib import pyplot
 import numpy
 import jnius_config as jconf

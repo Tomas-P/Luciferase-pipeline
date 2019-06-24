@@ -8,6 +8,7 @@ Created on Wed Jun 12 11:56:24 2019
 
 import tkinter as tk
 from tkinter import filedialog as fd
+from clock import Clock
 
 
 
@@ -177,14 +178,18 @@ class UserInterface(tk.Frame):
         self.__but = tk.Button(self, text="Ready", command=master.destroy)
         self.__align = Optional(self, "align using SIFT")
         self.__align.var.set(True)
+        self.__start_time = Clock(self, "ZT time start time")
+        self.__interval = Clock(self, "Time between captures")
                                 
 
         self.__folder.grid(row=0)
         self.__mask.grid(row=1)
-        self.__normalize.grid(row=2,column=0)
-        self.__align.grid(row=2,column=1)
+        self.__normalize.grid(row=0,column=1)
+        self.__align.grid(row=1,column=1)
         self.__background.grid(row=3,column=0)
-        self.__rois.grid(row=4)
+        self.__start_time.grid(row=3,column=1)
+        self.__rois.grid(row=4,column=0)
+        self.__interval.grid(row=4,column=1)
         self.__but.grid(row=5)
 
     @property
@@ -217,6 +222,16 @@ class UserInterface(tk.Frame):
 
         return self.__align.get()
 
+    @property
+    def start_time(self):
+
+        return self.__start_time.time
+
+    @property
+    def interval(self):
+
+        return self.__interval.time
+
     def save(self, filename):
 
         with open(filename, 'a') as params:
@@ -229,3 +244,10 @@ class UserInterface(tk.Frame):
             params.write("normalize " + str(self.normalize) + "\n")
             params.write("align " + str(self.align) + "\n")
 
+
+if __name__ == '__main__':
+
+    base = tk.Tk()
+    interface = UserInterface(base)
+    interface.pack()
+    

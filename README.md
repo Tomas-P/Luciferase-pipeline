@@ -19,7 +19,6 @@ An automated pipeline for analyzing luciferase imaging data using Python and Ima
 
 ## Dependencies
 * numpy
-* pandas
 * matplotlib
 * PyJnius
 * Python 3.5
@@ -31,7 +30,7 @@ An automated pipeline for analyzing luciferase imaging data using Python and Ima
     * Make sure to include pip in your install
 2. Install Fiji from http://fiji.sc/
 3. Follow the PyJnius install instructions for your OS at https://pyjnius.readthedocs.io/en/stable/installation.html
-4. Use pip to install numpy, pandas, and matplotlib
+4. Use pip to install numpy and matplotlib
 5. Download the code from this repository into a folder on your computer
 
 ## Running

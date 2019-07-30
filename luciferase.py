@@ -10,25 +10,9 @@ import numpy
 import jnius_config as jconf
 import ui
 
-
-
-def get_imagej_folder() -> str:
-    window = tk.Tk()
-    folder = fd.askdirectory(
-        master=window,
-        title="Please select your Fiji folder",
-        initialdir=os.environ['HOME']+'/Fiji.app'
-        )
-    window.destroy()
-    return folder + '/'
-
-# I'm writing this as though its a constant,
-# because it should not be changed once set
-IJF = get_imagej_folder() # IJF : ImageJ Folder
-
 # setup environment for the java bridge
-os.environ['JAVA_HOME'] = glob.glob(IJF + '/**/jdk*/', recursive=True)[0]
-jconf.add_classpath(*glob.glob(IJF+"**/*.jar",recursive=True))
+os.environ['JAVA_HOME'] = "/usr/lib/jvm/default-java"
+jconf.add_classpath(*glob.glob("/home/tomas/Fiji.app/**/*.jar",recursive=True))
 
 # makes the java bridge
 import jnius

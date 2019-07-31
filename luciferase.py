@@ -440,7 +440,7 @@ def main():
 
         pyplot.plot(data[group].mean(1), label=lbl)
 
-    pyplot.plot(background, label="Background")
+    pyplot.plot(background, label="Background", color="black")
 
     pyplot.legend()
 

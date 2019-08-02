@@ -14,7 +14,7 @@ An automated pipeline for analyzing luciferase imaging data using Python and Ima
 * Outputs graph of each group's average values
 * Independent of ImageJ's position in filesystem
 * Independent of dataset's positions in filesystem
-* Fast
+* Time based X axis based on user input of first image time and inteval between succesive images
 * Reproducible results
 
 ## Dependencies

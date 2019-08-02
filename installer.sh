@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 
-apt-get install -y wget git python3 python3-tk python3-pip default-jdk
+apt-get install -y wget git python3 python3-tk python3-pip default-jdk unzip
 pip3 install numpy matplotlib Cython
 export JAVA_HOME=/usr/lib/jvm/default-java
 pip3 install PyJnius

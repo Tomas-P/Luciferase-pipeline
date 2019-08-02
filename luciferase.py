@@ -329,8 +329,11 @@ Does not modify or consume the input image."""
     stack.setSlice(1) # got to reset the stack's position
     
     return values
-        
-        
+
+
+def set_xticks(timepoint_count, h_interval):
+    IBT = 10 # stands for Images Between Ticks: the # of images between each tick on the x axis
+    pyplot.xticks(ticks=numpy.arange(0,timepoint_count + 1, IBT),labels=numpy.arange(0,timepoint_count * h_interval + h_interval,h_interval * IBT))
 
 def main():
 
@@ -345,6 +348,8 @@ def main():
     interface.save("parameters.txt")
 
     stack = open_stack(interface.image_folder)
+
+    timepoint_count = stack.stackSize
 
     img = open_image(interface.mask)
 
@@ -448,9 +453,11 @@ def main():
 
     pyplot.title(title)
 
-    pyplot.xticks(numpy.arange(0, data[0].shape[0] + 12, 12))
+    h_interval = interface.interval[0] + (interface.interval[1] / 60)
 
-    pyplot.xlabel("Time or Slice Position")
+    set_xticks(timepoint_count, h_interval)
+
+    pyplot.xlabel("Hours after {}:{} {}".format(*interface.start_time))
 
     pyplot.ylabel("Normalized Intensity" if interface.normalize else "Intensity")
 
@@ -458,11 +465,11 @@ def main():
 
     pyplot.show()
 
-    for group in data:
+    for group in sorted(data.keys()):
 
         pyplot.plot(data[group])
 
-        pyplot.xticks(numpy.arange(0, data[group].shape[0] + 12, 12))
+        set_xticks(timepoint_count, h_interval)
 
         pyplot.title("Group {}".format(group) if group >= 0 else "Unclassified")
 

@@ -26,7 +26,24 @@ An automated pipeline for analyzing luciferase imaging data using Python and Ima
 * Fiji(Fiji Is Just ImageJ)
 
 ## Installation
-WIP
+You can try to download and run the `installer.sh` script with a root user account.
+Alternatively, install the following by hand before downloading the repo
+through git or other means:
+
+*messages in parenthesis are about apt package names*
+
+*messages in square brackets are about pip package names*
+
+* Fiji (Fiji Is Just ImageJ)
+* JDK (try using default-jdk first)
+* Python 3 (python3)
+   * pip (python3-pip)
+   * tkinter (python3-tk)
+   * Numpy \[numpy\]
+   * Matplotlib \[matplotlib\]
+   * PyJnius \[PyJnius\] *make sure you set JAVA_HOME before installing*
+   
+
 
 ## Running
 Run the luciferase.py script under Python 3.5 or later.

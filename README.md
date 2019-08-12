@@ -30,9 +30,6 @@ You can try to download and run the `installer.sh` script with a root user accou
 Alternatively, install the following by hand before downloading the repo
 through git or other means:
 
-*messages in parenthesis are about apt package names*
-
-*messages in square brackets are about pip package names*
 
 * Fiji (Fiji Is Just ImageJ)
 * JDK (try using default-jdk first)

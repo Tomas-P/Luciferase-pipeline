@@ -10,66 +10,42 @@ import tkinter as tk
 from tkinter import filedialog as fd
 from clock import Clock
 
+class LabeledSpinbox(tk.Frame):
 
+    def __init__(self, master, low :int, high :int, text :str):
 
-class LabeledScale(tk.Frame):
-    
-    def __init__(self, master, min_v :int, max_v :int, label :str):
-        
         tk.Frame.__init__(self, master)
 
-        self.var = tk.IntVar()
-        
-        scale = tk.Scale(self,
-                              from_ = min_v,
-                              to = max_v,
-                              orient = tk.HORIZONTAL,
-                              variable = self.var)
-        
-        text = tk.Label(self, text=label)
-        
-        
-        down = tk.Button(
-                self,
-                text="-",
-                command=lambda:self.var.set(
-                        self.var.get() - 1))
-        
-        up = tk.Button(
-                self,
-                text="+",
-                command=lambda:self.var.set(
-                        self.var.get() + 1))
-        
-        text.grid(row=0,column=0,columnspan=2)
-        
-        down.grid(row=1,column=0,columnspan=1)
-        
-        up.grid(row=1,column=1,columnspan=1)
-        
-        scale.grid(row=2,column=0,columnspan=2)
-    
+        self.var = tk.StringVar()
+
+        self.spinner = tk.Spinbox(self, from_=low, to=high, textvariable=self.var)
+        self.label = tk.Label(self, text=text)
+
+        self.label.grid(row=0,column=0,sticky=tk.W)
+        self.spinner.grid(row=0,column=1)
+
     def get(self):
-        
-        return self.var.get()
+        return int(self.var.get())
+
 
 class BackgroundSliders(tk.Frame):
 
     def __init__(self, master):
         tk.Frame.__init__(self, master)
 
-        self.x = LabeledScale(self, 0, 2000, "bx")
-        self.y = LabeledScale(self, 0, 2000, "by")
-        self.width = LabeledScale(self, 1, 500, "width")
-        self.height = LabeledScale(self, 1, 500, "height")
+        self.x = LabeledSpinbox(self, 0, 2000, "bx")
+        self.y = LabeledSpinbox(self, 0, 2000, "by")
+        self.width = LabeledSpinbox(self, 1, 500, "width")
+        self.height = LabeledSpinbox(self, 1, 500, "height")
 
-        lbl = tk.Label(self, text="comparison region")
+        self.lbl = tk.Label(self, text="comparison region")
 
-        lbl.grid(row=0)
-        self.x.grid(row=1,column=0)
-        self.y.grid(row=1,column=1)
-        self.width.grid(row=2,column=0)
-        self.height.grid(row=2,column=1)
+        self.lbl.grid(row=0)
+        self.x.grid(row=1)
+        self.y.grid(row=2)
+        self.width.grid(row=3)
+        self.height.grid(row=4)
+        
 
     def get(self) -> tuple:
 
@@ -182,15 +158,15 @@ class UserInterface(tk.Frame):
         self.__interval = Clock(self, "Time between captures")
                                 
 
-        self.__folder.grid(row=0)
-        self.__mask.grid(row=1)
-        self.__normalize.grid(row=0,column=1)
-        self.__align.grid(row=1,column=1)
-        self.__background.grid(row=3,column=0)
-        self.__start_time.grid(row=3,column=1)
-        self.__rois.grid(row=4,column=0)
-        self.__interval.grid(row=4,column=1)
-        self.__but.grid(row=5)
+        self.__folder.grid(row=0,columnspan=3)
+        self.__mask.grid(row=1,columnspan=3)
+        self.__background.grid(row=2,column=0,columnspan=2,rowspan=5)
+        self.__normalize.grid(row=7,column=0)
+        self.__align.grid(row=7,column=1)
+        self.__rois.grid(row=8,column=0,columnspan=4)
+        self.__start_time.grid(row=9,column=0)
+        self.__interval.grid(row=9,column=1)
+        self.__but.grid(row=10)
 
     @property
     def image_folder(self):
@@ -243,11 +219,13 @@ class UserInterface(tk.Frame):
             params.write("background " + str(self.background_bounds) + "\n")
             params.write("normalize " + str(self.normalize) + "\n")
             params.write("align " + str(self.align) + "\n")
+            params.write("start time" + str(self.start_time) + "\n")
+            params.write("interval" + str(self.interval) + "\n")
 
 
 if __name__ == '__main__':
 
     base = tk.Tk()
+    base.title("Luciferase Pipeline")
     interface = UserInterface(base)
     interface.pack()
-    

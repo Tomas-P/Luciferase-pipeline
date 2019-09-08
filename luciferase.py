@@ -12,7 +12,8 @@ import ui
 
 # setup environment for the java bridge
 os.environ['JAVA_HOME'] = "/usr/lib/jvm/default-java"
-jconf.add_classpath(*glob.glob("/home/tomas/Fiji.app/**/*.jar",recursive=True))
+home = os.environ['HOME']
+jconf.add_classpath(*glob.glob("{}/Fiji.app/**/*.jar".format(home),recursive=True))
 
 # makes the java bridge
 import jnius

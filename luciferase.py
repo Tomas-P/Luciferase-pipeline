@@ -10,10 +10,16 @@ import numpy
 import jnius_config as jconf
 import ui
 
+def locate_jars() -> list:
+    home = os.environ['HOME']
+    ijfolder = glob.glob(home + "/**/Fiji.app", recursive=True)[0]
+    return  glob.glob(f"{ijfolder}/**/*.jar", recursive=True)
+
 # setup environment for the java bridge
 os.environ['JAVA_HOME'] = "/usr/lib/jvm/default-java"
-home = os.environ['HOME']
-jconf.add_classpath(*glob.glob("{}/Fiji.app/**/*.jar".format(home),recursive=True))
+
+# find ImageJ folder and files
+jconf.add_classpath(*locate_jars())
 
 # makes the java bridge
 import jnius
@@ -336,152 +342,154 @@ def set_xticks(timepoint_count, h_interval):
     IBT = 10 # stands for Images Between Ticks: the # of images between each tick on the x axis
     pyplot.xticks(ticks=numpy.arange(0,timepoint_count + 1, IBT),labels=numpy.arange(0,timepoint_count * h_interval + h_interval,h_interval * IBT))
 
-def main():
-
+def get_params():
     base = tk.Tk()
-
     interface = ui.UserInterface(base)
-
     interface.pack()
-
     base.mainloop()
-
-    interface.save("parameters.txt")
-
-    stack = open_stack(interface.image_folder)
-
-    timepoint_count = stack.stackSize
-
-    img = open_image(interface.mask)
-
-    groups = open_archive(interface.roi_settings['groups'])
-
-    if interface.roi_settings['use existing']:
-
-        rois = open_archive(interface.roi_settings['existing'])
-
-        close(img)
-
-    else:
-
-        rois = generate_rois(img)
-
-    if interface.roi_settings['save rois']:
-
-        save_rois(rois, interface.roi_settings['roi save file'])
-
-    del img
-
-    improve(stack, True)
-
-    if interface.align:
-
-        stack = align(stack)
-
-        WM.getWindow(String("Log")).hide()
-
-    measurements = measure_rois(stack, rois)
-
-    background = measure_background(stack, *interface.background_bounds)
-
-    close(stack)
-
-    del stack
-
-    if interface.normalize:
-
-        for roi in measurements:
-
-            normalize(measurements[roi])
-
-        normalize(background)
-
-    groupings = affiliate(groups, measurements.keys())
-
-    data = {}
-
-    for group in groupings:
-
-        for roi in groupings[group]:
-
-            data.setdefault(group, []).append(measurements[roi])
-
-    try:
-
-        os.mkdir("output")
-
-    except FileExistsError:
-
-        pass
-
-    try:
-
-        os.mkdir("graphs")
-
-    except FileExistsError:
-
-        pass
-
-    ofiles = glob.glob("output/*")
-    gfiles = glob.glob("graphs/*")
-
-    if len(ofiles) > 0:
-
-        for of in ofiles:
-            os.remove(of)
-
-    if len(gfiles) > 0:
-            
-        for gf in gfiles:
-            os.remove(gf)
-    
-    for group in data:
-
-        # causes the data to be organized in an easily graphable way
-        data[group] = numpy.array(data[group]).T
-
-        numpy.savetxt("output/group{}.csv".format(group), data[group], delimiter=',')
-
-        lbl = "Unclassified" if group == -1 else "Group {}".format(group)
-
-        pyplot.plot(data[group].mean(1), label=lbl)
-
-    pyplot.plot(background, label="Background", color="black")
-
-    pyplot.legend()
-
-    title = "Normalized Intensity" if interface.normalize else "Intensity"
-
-    pyplot.title(title)
-
-    h_interval = interface.interval[0] + (interface.interval[1] / 60)
-
-    set_xticks(timepoint_count, h_interval)
-
-    pyplot.xlabel("Hours after {}:{} {}".format(*interface.start_time))
-
-    pyplot.ylabel("Normalized Intensity" if interface.normalize else "Intensity")
-
-    pyplot.savefig("graphs/summary.png")
-
-    pyplot.show()
-
-    for group in sorted(data.keys()):
-
-        pyplot.plot(data[group])
-
-        set_xticks(timepoint_count, h_interval)
-
-        pyplot.title("Group {}".format(group) if group >= 0 else "Unclassified")
-
-        pyplot.xlabel("Time or Slice Position")
-
-        pyplot.ylabel("Normalized Intensity" if interface.normalize else "Intensity")
-
-        pyplot.savefig("graphs/group{}.png".format(group) if group >= 0 else "graphs/unclassified.png")
-
-        pyplot.show()
-
-if __name__ == '__main__':
-
-    main()
+    parameters = interface.parameters()
+    parameters.saveas("last_params.json")
+    return parameters
+
+##
+##def main():
+##
+##    interface = get_params()
+##
+##    stack = open_stack(interface.image_folder)
+##
+##    timepoint_count = stack.stackSize
+##
+##    img = open_image(interface.mask)
+##
+##    groups = open_archive(interface.roi_settings['groups'])
+##
+##    if interface.roi_settings['use existing']:
+##
+##        rois = open_archive(interface.roi_settings['existing'])
+##
+##        close(img)
+##
+##    else:
+##
+##        rois = generate_rois(img)
+##
+##    if interface.roi_settings['save rois']:
+##
+##        save_rois(rois, interface.roi_settings['roi save file'])
+##
+##    del img
+##
+##    improve(stack, True)
+##
+##    if interface.align:
+##
+##        stack = align(stack)
+##
+##        WM.getWindow(String("Log")).hide()
+##
+##    measurements = measure_rois(stack, rois)
+##
+##    background = measure_background(stack, *interface.background_bounds)
+##
+##    close(stack)
+##
+##    del stack
+##
+##    if interface.normalize:
+##
+##        for roi in measurements:
+##
+##            normalize(measurements[roi])
+##
+##        normalize(background)
+##
+##    groupings = affiliate(groups, measurements.keys())
+##
+##    data = {}
+##
+##    for group in groupings:
+##
+##        for roi in groupings[group]:
+##
+##            data.setdefault(group, []).append(measurements[roi])
+##
+##    try:
+##
+##        os.mkdir("output")
+##
+##    except FileExistsError:
+##
+##        pass
+##
+##    try:
+##
+##        os.mkdir("graphs")
+##
+##    except FileExistsError:
+##
+##        pass
+##
+##    ofiles = glob.glob("output/*")
+##    gfiles = glob.glob("graphs/*")
+##
+##    if len(ofiles) > 0:
+##
+##        for of in ofiles:
+##            os.remove(of)
+##
+##    if len(gfiles) > 0:
+##            
+##        for gf in gfiles:
+##            os.remove(gf)
+##    
+##    for group in data:
+##
+##        # causes the data to be organized in an easily graphable way
+##        data[group] = numpy.array(data[group]).T
+##
+##        numpy.savetxt("output/group{}.csv".format(group), data[group], delimiter=',')
+##
+##        lbl = "Unclassified" if group == -1 else "Group {}".format(group)
+##
+##        pyplot.plot(data[group].mean(1), label=lbl)
+##
+##    pyplot.plot(background, label="Background", color="black")
+##
+##    pyplot.legend()
+##
+##    title = "Normalized Intensity" if interface.normalize else "Intensity"
+##
+##    pyplot.title(title)
+##
+##    h_interval = interface.interval[0] + (interface.interval[1] / 60)
+##
+##    set_xticks(timepoint_count, h_interval)
+##
+##    pyplot.xlabel("Hours after {}:{} {}".format(*interface.start_time))
+##
+##    pyplot.ylabel("Normalized Intensity" if interface.normalize else "Intensity")
+##
+##    pyplot.savefig("graphs/summary.png")
+##
+##    pyplot.show()
+##
+##    for group in sorted(data.keys()):
+##
+##        pyplot.plot(data[group])
+##
+##        set_xticks(timepoint_count, h_interval)
+##
+##        pyplot.title("Group {}".format(group) if group >= 0 else "Unclassified")
+##
+##        pyplot.xlabel("Time or Slice Position")
+##
+##        pyplot.ylabel("Normalized Intensity" if interface.normalize else "Intensity")
+##
+##        pyplot.savefig("graphs/group{}.png".format(group) if group >= 0 else "graphs/unclassified.png")
+##
+##        pyplot.show()
+##
+##if __name__ == '__main__':
+##
+##    main()

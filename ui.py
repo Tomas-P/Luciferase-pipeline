@@ -1,231 +1,194 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Jun 12 11:56:24 2019
-
-@author: tomas
-"""
-
 import tkinter as tk
-from tkinter import filedialog as fd
-from clock import Clock
+from file_entry import FileEntry
+from labeled import LabeledSpinbox, LabeledEntry, LabeledScale
+import json
 
-class LabeledSpinbox(tk.Frame):
+class Clock(tk.Frame):
 
-    def __init__(self, master, low :int, high :int, text :str):
-
-        tk.Frame.__init__(self, master)
-
-        self.var = tk.StringVar()
-
-        self.spinner = tk.Spinbox(self, from_=low, to=high, textvariable=self.var)
-        self.label = tk.Label(self, text=text)
-
-        self.label.grid(row=0,column=0,sticky=tk.W)
-        self.spinner.grid(row=0,column=1)
-
-    def get(self):
-        return int(self.var.get())
-
-
-class BackgroundSliders(tk.Frame):
-
-    def __init__(self, master):
-        tk.Frame.__init__(self, master)
-
-        self.x = LabeledSpinbox(self, 0, 2000, "bx")
-        self.y = LabeledSpinbox(self, 0, 2000, "by")
-        self.width = LabeledSpinbox(self, 1, 500, "width")
-        self.height = LabeledSpinbox(self, 1, 500, "height")
-
-        self.lbl = tk.Label(self, text="comparison region")
-
-        self.lbl.grid(row=0)
-        self.x.grid(row=1)
-        self.y.grid(row=2)
-        self.width.grid(row=3)
-        self.height.grid(row=4)
-        
-
-    def get(self) -> tuple:
-
-        return self.x.get(), self.y.get(), self.width.get(), self.height.get()
-
-
-class FileEntry(tk.Frame):
-    
-    def __init__(self, master, text:str, folder:bool=False, save:bool=False):
-        
-        tk.Frame.__init__(self,master)
-
-        self.var = tk.StringVar()
-        
-        label = tk.Label(self, text=text)
-        
-        entry = tk.Entry(self, textvariable=self.var)
-        
-        if folder and save:
-            
-            raise Exception("Making new folders is outside the mission parameters")
-            
-        elif folder:
-            func = lambda:self.var.set(fd.askdirectory())
-            
-        elif save:
-            func = lambda:self.var.set(fd.asksaveasfilename())
-            
-        else:
-            func = lambda:self.var.set(fd.askopenfilename())
-        
-        button = tk.Button(self, text=text, command=func)
-        
-        
-        label.grid(row=0,column=0)
-        entry.grid(row=0,column=1)
-        button.grid(row=0,column=2)
-    
-    def get(self):
-        
-        return self.var.get()
-
-
-class Optional(tk.Frame):
-
-    def __init__(self, master, text :str):
+    def __init__(self, master, text, hour_var, minute_var):
 
         tk.Frame.__init__(self, master)
 
-        self.var = tk.BooleanVar()
+        self.__h = hour_var
+        self.__m = minute_var
 
-        self.check = tk.Checkbutton(
-            self,
-            text=text,
-            variable=self.var
-            )
+        self.__hour = LabeledSpinbox(self,
+                                     "hour",
+                                     from_=0,to=24,
+                                     textvariable=self.__h
+                                     )
+        self.__minute = LabeledSpinbox(self,
+                                       "minute",
+                                       from_=0,
+                                       to=60,
+                                       textvariable=self.__m)
+        self.__label = tk.Label(self, text=text)
 
-        self.check.grid()
+        self.__label.grid(row=0)
+        self.__hour.grid(row=1)
+        self.__minute.grid(row=2)
 
-    def get(self):
+    @property
+    def hour(self):
+        return int(self.__h.get())
 
-        return self.var.get()
+    @property
+    def minute(self):
+        return int(self.__m.get())
 
-class RoiOptions(tk.Frame):
+        
 
-    def __init__(self, master):
+class Parameters:
 
-        tk.Frame.__init__(self, master)
+    def __init__(self):
+        self.folder = tk.StringVar()
+        self.mask = tk.StringVar()
+        self.groups = tk.StringVar()
+        self.normalize = tk.BooleanVar()
+        self.align = tk.BooleanVar()
+        self.existing_rois = tk.StringVar()
+        self.rois_savename = tk.StringVar()
+        self.use_existing_rois = tk.BooleanVar()
+        self.save_generated_rois = tk.BooleanVar()
+        # b is short for background
+        self.bx = tk.StringVar()
+        self.by = tk.StringVar()
+        self.b_width = tk.StringVar()
+        self.b_height = tk.StringVar()
+        self.start_hour = tk.IntVar()
+        self.start_minute = tk.IntVar()
+        self.interval_hours = tk.IntVar()
+        self.interval_minutes = tk.IntVar()
 
-        self.existing_roi = FileEntry(self, "existing roi archive")
-        self.use_existing_roi = Optional(self, "use existing roi archive")
-
-        self.groups = FileEntry(self, "file with groups")
-
-        self.save_name = FileEntry(self, "name to save rois", save=True)
-        self.use_save_name = Optional(self, "save generated rois")
-
-        self.existing_roi.grid(row=0,column=0)
-        self.use_existing_roi.grid(row=0,column=1)
-
-        self.save_name.grid(row=1,column=0)
-        self.use_save_name.grid(row=1,column=1)
-
-        self.groups.grid(row=2)
-
-    def get(self):
-
-        return {'use existing' : self.use_existing_roi.get(),
-                'existing' : self.existing_roi.get(),
-                'groups' : self.groups.get(),
-                'save rois' : self.use_save_name.get(),
-                'roi save file' : self.save_name.get()
+    def to_dict(self):
+        return {
+            "folder" : self.folder.get(),
+            "maskfile" : self.mask.get(),
+            "groupfile" : self.groups.get(),
+            "normalize" : self.normalize.get(),
+            "align" : self.align.get(),
+            "existing rois" : self.existing_rois.get(),
+            "filename to save rois" : self.rois_savename.get(),
+            "use existing rois" : self.use_existing_rois.get(),
+            "save generated rois" : self.save_generated_rois.get(),
+            "background" : {
+                "bx" : self.bx.get(),
+                "by" : self.by.get(),
+                "width" : self.b_width.get(),
+                "height" : self.b_height.get()
+                },
+            "start time" : {
+                "hour" : self.start_hour.get(),
+                "minute" : self.start_minute.get()
+                },
+            "interval" : {
+                "hours" : self.interval_hours.get(),
+                "minutes" : self.interval_minutes.get(),
                 }
+            }
+
+    def saveas(self, filename):
+        with open(filename, 'w') as file:
+            json.dump(self.to_dict(), file)
+    
 
 class UserInterface(tk.Frame):
 
-    def __init__(self, master):
+    def __init__(self, master, params):
 
         tk.Frame.__init__(self, master)
 
-        self.__background = BackgroundSliders(self)
-        self.__rois = RoiOptions(self)
-        self.__normalize = Optional(self, "normalize data")
-        self.__folder = FileEntry(self, "folder with data images", True)
-        self.__mask = FileEntry(self, "segmentation image")
-        self.__but = tk.Button(self, text="Ready", command=master.destroy)
-        self.__align = Optional(self, "align using SIFT")
-        self.__align.var.set(True)
-        self.__start_time = Clock(self, "ZT time start time")
-        self.__interval = Clock(self, "Time between captures")
-                                
+        self.params = params
+        self.folder = FileEntry(self,"folder with data",self.params.folder,True)
+        self.mask = FileEntry(self,"segmentation image",self.params.mask)
+        self.groups = FileEntry(self,"experimental groups",self.params.groups)
+        self.normalize = tk.Checkbutton(self,
+                                        text="normalize data",
+                                        variable=self.params.normalize
+                                        )
+        self.align = tk.Checkbutton(self,
+                                    text="align using SIFT",
+                                    variable=self.params.align
+                                    )
+        self.existing = tk.Checkbutton(self,
+                                       text="use existing rois",
+                                       variable=self.params.use_existing_rois
+                                       )
+        self.save_gen = tk.Checkbutton(self,
+                                       text="save generated rois",
+                                       variable=self.params.save_generated_rois
+                                       )
+        self.extant_rois = FileEntry(self,
+                                     "existing rois",
+                                     self.params.existing_rois
+                                     )
+        self.save_rois_to = FileEntry(self,
+                                      "save generated rois as",
+                                      self.params.rois_savename,
+                                      save=True
+                                      )
+        self.bx = LabeledSpinbox(self,
+                                 "background bx",
+                                 textvariable=self.params.bx
+                                 )
+        self.by = LabeledSpinbox(self,
+                                 "background by",
+                                 textvariable=self.params.by
+                                 )
+        self.b_width = LabeledSpinbox(self,
+                                      "background width",
+                                      textvariable=self.params.b_width
+                                      )
+        self.b_height = LabeledSpinbox(self,
+                                       "background height",
+                                       textvariable=self.params.b_height
+                                       )
+        self.start_clock = Clock(self,
+                                 "start time",
+                                 params.start_hour,
+                                 params.start_minute
+                                 )
+        self.interval_clock = Clock(self,
+                                    "interval between captures",
+                                    params.interval_hours,
+                                    params.interval_minutes
+                                    )
+        self.finish = tk.Button(self, text="Done", command=master.destroy)
+        
+        self.setup()
 
-        self.__folder.grid(row=0,columnspan=3)
-        self.__mask.grid(row=1,columnspan=3)
-        self.__background.grid(row=2,column=0,columnspan=2,rowspan=5)
-        self.__normalize.grid(row=7,column=0)
-        self.__align.grid(row=7,column=1)
-        self.__rois.grid(row=8,column=0,columnspan=4)
-        self.__start_time.grid(row=9,column=0)
-        self.__interval.grid(row=9,column=1)
-        self.__but.grid(row=10)
+    def setup(self):
+        
+        self.folder.grid(columnspan=3)
+        self.mask.grid(columnspan=3)
+        self.groups.grid(columnspan=3)
 
-    @property
-    def image_folder(self):
+        self.align.grid()
+        self.normalize.grid()
+        self.existing.grid()
+        self.save_gen.grid()
 
-        return self.__folder.get()
+        self.extant_rois.grid()
+        self.save_rois_to.grid()
 
-    @property
-    def mask(self):
+        self.bx.grid()
+        self.by.grid()
+        self.b_width.grid()
+        self.b_height.grid()
 
-        return self.__mask.get()
+        self.start_clock.grid()
+        self.interval_clock.grid()
 
-    @property
-    def roi_settings(self):
+        self.finish.grid()
 
-        return self.__rois.get()
+    def parameters(self):
 
-    @property
-    def background_bounds(self):
-
-        return self.__background.get()
-
-    @property
-    def normalize(self):
-
-        return self.__normalize.get()
-
-    @property
-    def align(self):
-
-        return self.__align.get()
-
-    @property
-    def start_time(self):
-
-        return self.__start_time.time
-
-    @property
-    def interval(self):
-
-        return self.__interval.time
-
-    def save(self, filename):
-
-        with open(filename, 'a') as params:
-
-            params.write("\n\n\n")
-            params.write("folder " + self.image_folder + '\n')
-            params.write("mask " + self.mask + '\n')
-            params.write("roi " + str(self.roi_settings) + "\n")
-            params.write("background " + str(self.background_bounds) + "\n")
-            params.write("normalize " + str(self.normalize) + "\n")
-            params.write("align " + str(self.align) + "\n")
-            params.write("start time" + str(self.start_time) + "\n")
-            params.write("interval" + str(self.interval) + "\n")
-
+        return self.params
 
 if __name__ == '__main__':
-
-    base = tk.Tk()
-    base.title("Luciferase Pipeline")
-    interface = UserInterface(base)
-    interface.pack()
+    t = tk.Tk()
+    p = Parameters()
+    ui = UserInterface(t, p)
+    ui.pack()
+    t.mainloop()
+    

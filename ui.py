@@ -99,11 +99,13 @@ class Parameters:
         self.groups = tk.StringVar()
         self.normalize = tk.BooleanVar()
         self.align = tk.BooleanVar()
+        self.align.set(True)
         self.existing_rois = tk.StringVar()
         self.rois_savename = tk.StringVar()
         self.use_existing_rois = tk.BooleanVar()
         self.save_generated_rois = tk.BooleanVar()
         # b is short for background
+        # the next four are bounds for a comparison region
         self.bx = tk.StringVar()
         self.by = tk.StringVar()
         self.b_width = tk.StringVar()
@@ -112,6 +114,7 @@ class Parameters:
         self.start_minute = tk.IntVar()
         self.interval_hours = tk.IntVar()
         self.interval_minutes = tk.IntVar()
+        
 
     def to_dict(self):
         return {

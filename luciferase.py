@@ -324,9 +324,7 @@ def measure_background(stack:ImagePlus,x:int,y:int,width:int,height :int)->list:
     """ Measures the background region as defined by the inputs.
 Does not modify or consume the input image."""
 
-    roi = Roi(int(x), int(y), int(width), int(height))
-
-    stack.setRoi(roi)
+    stack.setRoi(x, y, width, height)
 
     values = []
 
@@ -381,20 +379,121 @@ def get_background(stack :ImagePlus, params :ui.Parameters) -> list:
     "thin wrapper around measure_background with to decrease clutter"
     return measure_background(
         stack,
-        params.bx.get(),
-        params.by.get(),
-        params.b_width.get(),
-        params.b_height.get()
+        int(params.bx.get()),
+        int(params.by.get()),
+        int(params.b_width.get()),
+        int(params.b_height.get())
         )
 
+def organize_info(groups, measurements):
+    "organize the measurements by group and time"
+    org = affiliate(groups, measurements.keys())
+    data = {}
+    for group in org:
+        for roi in org[group]:
+            data.setdefault(group, []).append(measurements[roi])
+    for group in data:
+        # you need the time axis in the right place
+        data[group] = numpy.array(data[group]).T
+    
+    return data
+
+
+
+def reset_folders():
+    try:
+        os.mkdir("graphs")
+    except FileExistsError:
+        pass
+    try:
+        os.mkdir("spreadsheets")
+    except FileExistsError:
+        pass
+    existing = glob.glob("graphs/*") + glob.glob("spreadsheets/*")
+    for file in existing:
+        os.remove(file)
+
+def get_hour_interval(params):
+    return params.interval_hours.get() + (params.interval_minutes.get() / 60)
+
+def save_all_sheets(data):
+    "save all the information as csv files"
+    groups = sorted(data.keys())
+    for group in groups:
+        array = data[group]
+        numpy.savetxt(f"spreadsheets/group{group}.csv", array, delimiter=',')
+
+def plot_summary(data,background,s_hour:int,s_min:int,xtick,normalize_data=False):
+    "plot the graph that summarizes the entirety of the data set"
+    if normalize_data:
+        normalize(background)
+        for group in data:
+            pyplot.plot(data[group].mean(1) / data[group].max(),
+                        label=f"group {group}")
+        pyplot.title("Normalized gray values vs. Time")
+        pyplot.ylabel("normalized average plant gray value")
+    else:
+        for group in data:
+            pyplot.plot(data[group].mean(1),
+                        label=f"group {group}")
+        pyplot.title("Gray values vs Time")
+        pyplot.ylabel("Average plant gray value")
+    xtick()
+    pyplot.plot(background, label="background", color="black")
+    pyplot.xlabel(f"Time elapsed since start time of {s_hour}:{s_min} in hours")
+    pyplot.legend()
+    pyplot.savefig("graphs/summary.jpg")
+    pyplot.show()
+
+def plot_groups(data, normalize,start_hour,start_minute,xtick):
+    "plot the graph of each group in the data set"
+    for group in sorted(data):
+        if normalize:
+            pyplot.plot(data[group] / data[group].max())
+            xtick()
+            pyplot.title(f"Group {group}" if group!=-1 else "Unclassified")
+            pyplot.ylabel("Normalized plant gray value")
+            pyplot.xlabel(f"Time elapsed since start time of {start_hour}:{start_minute}")
+        else:
+            pyplot.plot(data[group])
+            xtick()
+            pyplot.title(f"Group {group}" if group!=-1 else "Unclassified")
+            pyplot.ylabel("Plant gray value")
+            pyplot.xlabel(f"Time elapsed since start time of {start_hour}:{start_minute}")
+        pyplot.savefig(f"graphs/group{group}.jpg")
+        pyplot.show()
+
+
 def main():
+    "run the program"
     params = get_params()
+    reset_folders()
     groups = open_archive(params.groups.get())
     stack = get_stack(params)
     rois = get_rois(params)
     background = get_background(stack, params)
     measurements = measure_rois(stack, rois)
+    close(stack)
+    data = organize_info(groups, measurements)
+    save_all_sheets(data)
+    hour_interval = get_hour_interval(params)
+    xpoints = len(data[0])
+    xticks = lambda:set_xticks(xpoints, hour_interval)
+    plot_summary(data,
+                 background,params.start_hour.get(),
+                 params.start_minute.get(),
+                 xticks,
+                 params.normalize.get()
+                 )
+    plot_groups(data,
+                params.normalize.get(),
+                params.start_hour.get(),
+                params.start_minute.get(),
+                xticks
+                )
+    return data
+
 
 if __name__ == '__main__':
-    main()
-# TODO: figure out this signatures bug
+    data = main()
+    

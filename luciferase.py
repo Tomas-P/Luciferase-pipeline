@@ -11,7 +11,7 @@ import jnius_config as jconf
 import ui
 
 def locate_jars() -> list:
-    home = os.environ['HOME']
+    home = os.path.expanduser("~")
     ijfolder = glob.glob(home + "/**/Fiji.app", recursive=True)[0]
     return  glob.glob(f"{ijfolder}/**/*.jar", recursive=True)
 

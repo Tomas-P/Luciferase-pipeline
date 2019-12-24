@@ -210,6 +210,8 @@ class UserInterface(tk.Frame):
                                     params.interval_minutes
                                     )
         self.finish = tk.Button(self, text="Done", command=master.destroy)
+
+        self.halt = tk.Button(self, text="Cancel", command=lambda:exit())
         
         self.setup()
 
@@ -224,18 +226,19 @@ class UserInterface(tk.Frame):
         self.existing.grid()
         self.save_gen.grid()
 
-        self.extant_rois.grid()
-        self.save_rois_to.grid()
+        self.extant_rois.grid(columnspan=3)
+        self.save_rois_to.grid(columnspan=3)
 
-        self.bx.grid()
-        self.by.grid()
-        self.b_width.grid()
-        self.b_height.grid()
+        self.bx.grid(columnspan=2)
+        self.by.grid(columnspan=2)
+        self.b_width.grid(columnspan=2)
+        self.b_height.grid(columnspan=2)
 
         self.start_clock.grid()
         self.interval_clock.grid()
 
-        self.finish.grid()
+        self.finish.grid(row=15,column=0)
+        self.halt.grid(row=15,column=1)
 
     def parameters(self):
 

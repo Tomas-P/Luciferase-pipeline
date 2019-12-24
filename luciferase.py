@@ -3,6 +3,8 @@
 import glob
 import math
 import os
+import platform
+from pathlib import Path
 import tkinter as tk
 from tkinter import filedialog as fd
 from matplotlib import pyplot
@@ -10,15 +12,26 @@ import numpy
 import jnius_config as jconf
 import ui
 
+def prep_env():
+    # set up the environment so that jnius can be successfully imported
+    runsys = platform.system()
+    if runsys == "Linux":
+        os.environ["JAVA_HOME"] = "/usr/lib/jvm/default-java"
+    elif runsys == "Windows":
+        os.environ["PATH"] += r"C:\Program Files\Java\jdk-13.0.1\bin\server;"
+    else:
+        raise Exception("{runsys} is unsupported by the pipeline")
+
+
 def locate_jars() -> list:
-    home = os.path.expanduser("~")
-    ijfolder = glob.glob(home + "/**/Fiji.app", recursive=True)[0]
-    return  glob.glob(f"{ijfolder}/**/*.jar", recursive=True)
+    # find the jar files associated with ImageJ
+    home = Path("~").expanduser()
+    ijfolder = next(home.glob("**/Fiji.app"))
+    alljars = [str(p) for p in ijfolder.glob("**/*.jar")]
+    return alljars
 
-# setup environment for the java bridge
-os.environ['JAVA_HOME'] = "/usr/lib/jvm/default-java"
 
-# find ImageJ folder and files
+prep_env()
 jconf.add_classpath(*locate_jars())
 
 # makes the java bridge

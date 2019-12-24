@@ -458,7 +458,7 @@ def plot_summary(data,background,s_hour:int,s_min:int,xtick,normalize_data=False
     pyplot.plot(background, label="background", color="black")
     pyplot.xlabel(f"Time elapsed since start time of {s_hour}:{s_min} in hours")
     pyplot.legend()
-    pyplot.savefig("graphs/summary.jpg")
+    pyplot.savefig("graphs/summary.png")
     pyplot.show()
 
 def plot_groups(data, normalize,start_hour,start_minute,xtick):
@@ -476,7 +476,7 @@ def plot_groups(data, normalize,start_hour,start_minute,xtick):
             pyplot.title(f"Group {group}" if group!=-1 else "Unclassified")
             pyplot.ylabel("Plant gray value")
             pyplot.xlabel(f"Time elapsed since start time of {start_hour}:{start_minute}")
-        pyplot.savefig(f"graphs/group{group}.jpg")
+        pyplot.savefig(f"graphs/group{group}.png")
         pyplot.show()
 
 

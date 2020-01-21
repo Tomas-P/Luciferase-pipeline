@@ -18,10 +18,12 @@ def prep_env():
     if runsys == "Linux":
         os.environ["JAVA_HOME"] = "/usr/lib/jvm/default-java"
     elif runsys == "Windows":
-        os.environ["JAVA_HOME"] = r"C:\Program Files\Java\jdk-13.0.1"
-        os.environ["PATH"] += r"C:\Program Files\Java\jdk-13.0.1\bin;"
-        os.environ["PATH"] += r"C:\Program Files\Java\jdk-13.0.1\bin\server;"
-        os.environ["PATH"] += r"C:\Program Files\Java\jdk-13.0.1\lib;"
+        javabase = Path("C:", "Program Files", "Java")
+        jdk = next(javabase.glob("jdk*"))
+        os.environ["JAVA_HOME"] = str(jdk)
+        os.environ["PATH"] += str(jdk / "bin") + ";"
+        os.environ["PATH"] += str(jdk / "bin" / "server") + ";"
+        os.environ["PATH"] += str(jdk / "lib") + ";"
     else:
         raise Exception("{runsys} is unsupported by the pipeline")
 

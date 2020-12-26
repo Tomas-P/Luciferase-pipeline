@@ -9,7 +9,7 @@ def prep_env():
     system = platform.system()
 
     if system == "Linux":
-        path = Path(".") / "javadevkit" / "linux" / "jdk-15.0.1"
+        path = Path("/usr/lib/jvm/default-java")
     elif system == "Windows":
         path = Path(".") / 'javadevkit' / 'windows' / 'jdk-15.0.1'
         os.environ['PATH'] += str(path / 'bin') + ';'
@@ -25,7 +25,16 @@ def prep_env():
     os.environ['JAVA_HOME'] = str(path.absolute())
 
 def locate_jars():
-    ijfolder = Path('.').absolute() / 'Fiji.app'
+    system = platform.system()
+    if system == "Linux":
+        subdir = "linux"
+    elif system == "Windows":
+        subdir = "windows"
+    elif system == "Darwin":
+        subdir = "mac"
+    else:
+        raise Exception(f"{system} is not supported by this program")
+    ijfolder = Path('.').absolute() / 'imagej' / subdir / "Fiji.app"
     return [str(p) for p in ijfolder.glob("**/*.jar")]
 
 def setup():

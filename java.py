@@ -9,7 +9,7 @@ def prep_env():
     system = platform.system()
 
     if system == "Linux":
-        path = Path("/usr/lib/jvm/default-java")
+        path = Path(".") / "javadevkit" / "linux" / "jdk-15.0.1"
     elif system == "Windows":
         path = Path(".") / 'javadevkit' / 'windows' / 'jdk-15.0.1'
         os.environ['PATH'] += str(path / 'bin') + ';'

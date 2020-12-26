@@ -34,7 +34,7 @@ def locate_jars():
         subdir = "mac"
     else:
         raise Exception(f"{system} is not supported by this program")
-    ijfolder = Path('.').absolute() / 'imagej' / subdir / "Fiji.app"
+    ijfolder = Path('.').absolute() / "Fiji.app"
     return [str(p) for p in ijfolder.glob("**/*.jar")]
 
 def setup():

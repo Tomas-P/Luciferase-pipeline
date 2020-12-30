@@ -1,8 +1,10 @@
 
+from pathlib import Path
 import numpy
 from matplotlib import pyplot
 from parameter import Param
 from ui import ask_user
+import graph
 from imagej import String,ImageJ,IJ,ImagePlus,FolderOpener,SIFT_Align,Macro,\
      WindowManager,WM,ImageCalculator,Roi,PolygonRoi,RatsQuadtree,RATS_,\
      RoiManager,close,ijrun,Our_imagej
@@ -187,11 +189,10 @@ def affiliate(measurements :dict, groups :list) -> dict:
         organized[group] = numpy.array(organized[group]).T
     return organized
 
-def aggregate_group_into_line(affiliation :dict, group):
-    target = affiliation[group]
-    return target.mean(axis=1)
+
 
 #what the hell is this normalizing against?
+# the maximum value of the individual plant
 def normalize_group_inplace(affil :dict, group):
     g = affil[group]
     newg = []
@@ -232,37 +233,8 @@ def compute(arguments):
 
     return bg, relation, groups
 
-def display(arguments, background, afilliation, groups):
-    xlabel = f"First image taken at {arguments[Param.INIT]} with\
- elapsed time between images being {arguments[Param.ELAPSED]} hours"
-    pyplot.xlabel(xlabel)
-    pyplot.ylabel("relative intensity")
-    # summary plot
-    for i,g in enumerate(groups):
-        line = aggregate_group_into_line(afilliation, g)
-        pyplot.plot(line, label=f"{i}")
-    pyplot.plot(background, label="background")
-    pyplot.legend()
-    pyplot.title("summary")
-    pyplot.xlabel(xlabel)
-    pyplot.ylabel("relative intensity")
-    pyplot.show()
-    # individual plots
-    for i,g in enumerate(groups):
-        pyplot.plot(afilliation[g])
-        pyplot.title(f"group {i}")
-        pyplot.xlabel(xlabel)
-        pyplot.ylabel("relative intensity")
-        pyplot.show()
-    # overlay all
-    for g in groups:
-        pyplot.plot(afilliation[g])
-    pyplot.title("all plants shown")
-    pyplot.xlabel(xlabel)
-    pyplot.ylabel("relative intensity")
-    pyplot.show()
-    
-if __name__ == '__main__':
+if  __name__ == '__main__':
     arguments = ask_user()
     bg, relation, groups = compute(arguments)
-    display(arguments, bg, relation, groups)
+    graph.saveall(arguments, relation, bg, groups)
+    print(arguments)

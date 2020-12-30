@@ -31,7 +31,7 @@ class FileEntry(tk.Frame):
 
     @staticmethod
     def getfunc(which :Param):
-        if which == Param.DATA:
+        if which == Param.DATA or which == Param.OUTPUT:
             return filedialog.askdirectory
         elif which == Param.MASK or which == Param.GROUPING or which == Param.BACKGROUND:
             return filedialog.askopenfilename
@@ -59,6 +59,7 @@ class UserInterface(tk.Frame):
             Param.NORM : tk.BooleanVar(value=False),
             Param.INIT : tk.StringVar(),
             Param.ELAPSED : tk.StringVar(),
+            Param.OUTPUT : tk.StringVar()
             }
         background = FileEntry(self,
                                "background zone",
@@ -105,6 +106,12 @@ class UserInterface(tk.Frame):
                                "time elapsed between photographs, in hours",
                                textvariable=self.args[Param.ELAPSED])
 
+        output = FileEntry(self,
+                           "output folder",
+                           self.args[Param.OUTPUT],
+                           FileEntry.getfunc(Param.OUTPUT)
+                           )
+
         confirm = tk.Button(self, text="Done", command=master.destroy)
         cancel = tk.Button(self, text="Cancel", command=exit)
         
@@ -117,8 +124,9 @@ class UserInterface(tk.Frame):
         normalize.grid(row=6)
         init.grid(row=7)
         elapsed.grid(row=8)
-        confirm.grid(row=9, column=0)
-        cancel.grid(row=9, column = 1)
+        output.grid(row=9)
+        confirm.grid(row=10, column=0)
+        cancel.grid(row=10, column = 1)
 
     def get(self):
         new = {}

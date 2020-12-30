@@ -29,3 +29,6 @@ class Param(enum.Enum):
     
     # elapsed time between photographs
     ELAPSED = 8
+
+    # folder where output files will be saved
+    OUTPUT = 9

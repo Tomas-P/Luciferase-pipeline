@@ -233,8 +233,21 @@ def compute(arguments):
 
     return bg, relation, groups
 
-if  __name__ == '__main__':
+def main():
     arguments = ask_user()
     bg, relation, groups = compute(arguments)
     graph.saveall(arguments, relation, bg, groups)
+    folder = Path(arguments[Param.OUTPUT])
+    agg_gs = []
+    for i,group in enumerate(groups):
+        fname = str(folder / f"group-{i}.csv")
+        numpy.savetxt(fname, relation[group], delimiter=",")
+        agg_gs.append(graph.aggregate_group_into_line(relation,group))
+    agg = numpy.array(agg_gs)
+    agg = agg.T # I always end up having to do this for some reason
+    fname = str(folder / "summaries.csv")
+    numpy.savetxt(fname, agg, delimiter=",")
     print(arguments)
+
+if __name__ == '__main__':
+    main()

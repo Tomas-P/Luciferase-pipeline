@@ -1,5 +1,7 @@
 # Luciferase-pipeline
 An automated pipeline for analyzing arabidopsis luciferase imaging data.
+![UI](doc/userinterface.jpg)
+
 
 ## How to Install
 
@@ -11,7 +13,7 @@ An automated pipeline for analyzing arabidopsis luciferase imaging data.
 ### On Windows
 * Download the `install-luc-win64.ps1` script
 * Change the powershell execution policy to allow running scripts, e.g. by running `Set-ExecutionPolicy Bypass` in powershell
-* Run `'install-luc-win64.ps1` in PowerShell, e.g. by 
+* Run `'install-luc-win64.ps1` in PowerShell, e.g. by opening PowerShell and typing .\install-luc-win64.ps1
 * Answer the prompts (one of the steps requires administrator privledges)
 
 ## How to Run
@@ -65,4 +67,3 @@ Run the `run.ps1` script in powershell
 * aggregate graph organized by experimental group over time (average brightness on y-axis, elapsed time on x-axis)
 * graph of each experimental group over time (individual brightness on y-axis, elapsed time on x-axis)
 * graph of all individuals over time (individual brightness on y-axis, elapsed time on x-axis)
-

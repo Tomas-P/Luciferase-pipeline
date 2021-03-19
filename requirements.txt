@@ -5,7 +5,7 @@ matplotlib==3.3.3; platform_system == "Linux"
 matplotlib==3.3.1; platform_system == "Windows"
 numpy==1.19.4; platform_system == "Linux"
 numpy==1.19.3; platform_system == "Windows"
-Pillow==8.0.1
+Pillow==8.1.1
 pyjnius==1.3.0
 pyparsing==2.4.7
 python-dateutil==2.8.1
